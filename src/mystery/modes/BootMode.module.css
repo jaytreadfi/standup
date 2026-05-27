@@ -1,0 +1,114 @@
+.root { position: absolute; inset: 0; }
+
+/* Center column — brand stack on top, bootlines below. Tight gap so the
+ * three log lines feel like an extension of the brand block, not a separate
+ * region. */
+.center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-6);
+}
+
+.brandWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.brand {
+  font-family: var(--font-mono);
+  font-size: var(--font-display);
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.08em;
+  text-align: center;
+  line-height: 1;
+}
+
+/* 1px accent underline that slides in under the brand. Width is animated
+ * by framer-motion; height stays fixed at 1px. */
+.underline {
+  height: 1px;
+  background: var(--color-accent);
+  margin-top: var(--space-3);
+}
+
+.subhead {
+  font-family: var(--font-mono);
+  font-size: var(--font-base);
+  color: var(--color-text-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: var(--space-3);
+}
+
+/* Bootlines — small terminal-log readout below the brand block. */
+.bootlines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.bootline {
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Decorative ghost glyph — huge faded accent character pinned to the
+ * top-right corner so it bleeds out of frame. Matches GhostNumber motif. */
+.ghostGlyph {
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  font-family: var(--font-mono);
+  font-size: 480px;
+  line-height: 0.8;
+  font-weight: 700;
+  color: var(--color-accent);
+  opacity: 0.04;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 0;
+}
+
+/* Corner ticks — 4 tiny accent dots 10px in from each absolute corner.
+ * Pulse on once during the boot beat (0 → 1 → 0 across 300ms). */
+.tick {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--color-accent);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  animation: tickPulse 300ms var(--ease-quart) forwards;
+}
+
+.tickTL { top: 10px; left: 10px; }
+.tickTR { top: 10px; right: 10px; }
+.tickBL { bottom: 10px; left: 10px; }
+.tickBR { bottom: 10px; right: 10px; }
+
+@keyframes tickPulse {
+  0%   { opacity: 0; }
+  50%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Reduced motion — render final state, no stagger or scale. */
+@media (prefers-reduced-motion: reduce) {
+  .tick {
+    animation: none;
+    opacity: 0;
+  }
+}

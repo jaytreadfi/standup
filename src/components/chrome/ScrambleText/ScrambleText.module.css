@@ -1,0 +1,7 @@
+.root {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  font-weight: 700;
+  white-space: pre;
+}

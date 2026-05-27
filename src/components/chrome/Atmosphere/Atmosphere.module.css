@@ -1,0 +1,77 @@
+/* Atmosphere
+   Global, extremely subtle atmospheric overlay.
+   Sits above the shell background and below all interactive HUD/overlay layers.
+   aria-hidden + pointer-events:none — purely decorative. */
+
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  contain: strict;
+}
+
+/* Layer 1 — vignette (transparent center to ~rgba(0,0,0,0.35) at corners) */
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.18) 75%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+}
+
+/* Layer 2 — scanlines (2px frequency, ~0.012 alpha — almost imperceptible) */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0) 1px,
+    rgba(255, 255, 255, 0.012) 1px,
+    rgba(255, 255, 255, 0.012) 2px
+  );
+}
+
+/* Layer 3 — gentle 1px horizontal sweep, drifts down over ~12s */
+.sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  background: var(--accent, #f57c3a);
+  opacity: 0.06;
+  will-change: transform;
+  transform: translate3d(0, -1px, 0);
+  animation: sweepDrift 12s linear infinite;
+}
+
+@keyframes sweepDrift {
+  0% {
+    transform: translate3d(0, -1px, 0);
+  }
+  100% {
+    transform: translate3d(0, 100vh, 0);
+  }
+}
+
+/* Reduced-motion: disable the sweep entirely */
+.atmosphere[data-motion='off'] .sweep {
+  animation: none;
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sweep {
+    animation: none;
+    display: none;
+  }
+}

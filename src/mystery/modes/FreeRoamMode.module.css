@@ -1,0 +1,235 @@
+.root { position: absolute; inset: 0; }
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--color-canvas);
+  overflow: hidden;
+  padding: var(--space-8);
+  box-sizing: border-box;
+  container-type: size;
+}
+
+/* Period atmospheres — keep morning neutral; layer warm/cool radial glows
+ * for dusk/night so the canvas has scene-ambient lighting. */
+.canvas[data-period="dusk"] {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(245, 124, 58, 0.05) 0%, transparent 50%),
+    linear-gradient(180deg, #141414 0%, #1a1410 100%);
+}
+
+.canvas[data-period="night"] {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(120, 160, 220, 0.04) 0%, transparent 55%),
+    linear-gradient(180deg, #0a0a0a 0%, #0a0c12 100%);
+}
+
+/* Square wrapper that fills the canvas while preserving the 1:1 floor-plan
+ * aspect. Container-query units pick the smaller of the canvas's two
+ * dimensions so the box never letterboxes — making absolute-positioned
+ * hotspots aligned to the floor plan. */
+.mapBox {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+}
+
+.floorPlan {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(0 0 36px rgba(245, 124, 58, 0.06));
+  user-select: none;
+  pointer-events: none;
+}
+
+.canvas[data-period="dusk"] .floorPlan {
+  filter: drop-shadow(0 0 36px rgba(245, 124, 58, 0.08)) brightness(0.9);
+}
+
+.canvas[data-period="night"] .floorPlan {
+  filter: drop-shadow(0 0 36px rgba(120, 160, 220, 0.05)) brightness(0.78);
+}
+
+.hotspotLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Hotspot button — invisible 32px hit target centered on the room point.
+ * Visuals are drawn by the inner .reticle layer. */
+.hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  display: block;
+}
+
+.hotspot:focus-visible {
+  outline: none;
+}
+
+/* Reticle — 32px square holding four 10×1 L-corners with a 12px central gap.
+ * Default state is dim accent at 0.45 opacity; hover/focus brightens to 1. */
+.reticle {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+  opacity: 0.45;
+  transition: opacity var(--dur-fast) var(--ease-quart);
+}
+
+.hotspot:hover .reticle,
+.hotspot:focus-visible .reticle {
+  opacity: 1;
+}
+
+/* L-corners. Each corner is a 10×10 box composed of two 10×1 / 1×10 segments
+ * via the box's borders. The 12px central gap is the natural result of the
+ * 32px reticle minus four 10px corners. */
+.cornerTL,
+.cornerTR,
+.cornerBL,
+.cornerBR {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+}
+
+.cornerTL { top: 0; left: 0; border-top: 1px solid var(--color-accent); border-left: 1px solid var(--color-accent); }
+.cornerTR { top: 0; right: 0; border-top: 1px solid var(--color-accent); border-right: 1px solid var(--color-accent); }
+.cornerBL { bottom: 0; left: 0; border-bottom: 1px solid var(--color-accent); border-left: 1px solid var(--color-accent); }
+.cornerBR { bottom: 0; right: 0; border-bottom: 1px solid var(--color-accent); border-right: 1px solid var(--color-accent); }
+
+/* Active state — corners hide; a thin 28×28 outline rectangle and a 4px
+ * solid centered dot mark the player's current room. */
+.activeFrame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--color-accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.activeDot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  transform: translate(-50%, -50%);
+  background: var(--color-accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hotspot[data-active] .reticle { opacity: 1; }
+.hotspot[data-active] .cornerTL,
+.hotspot[data-active] .cornerTR,
+.hotspot[data-active] .cornerBL,
+.hotspot[data-active] .cornerBR { opacity: 0; }
+.hotspot[data-active] .activeFrame { opacity: 1; animation: hotspotPulse 2000ms var(--ease-soft) infinite; }
+.hotspot[data-active] .activeDot { opacity: 1; }
+
+@keyframes hotspotPulse {
+  0%   { opacity: 0.7; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hotspot[data-active] .activeFrame { animation: none; opacity: 1; }
+}
+
+/* Framed callout label — only visible on hover/focus. Active room does NOT
+ * display a permanent label; that's what the bottom-left CURRENT block is for. */
+.hotspotLabel {
+  position: absolute;
+  bottom: calc(100% + var(--space-2));
+  left: 50%;
+  transform: translate(-50%, 4px);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  background: var(--color-canvas);
+  border: 1px solid var(--color-accent);
+  padding: var(--space-1) var(--space-3);
+  opacity: 0;
+  transition:
+    opacity 120ms var(--ease-quart),
+    transform 120ms var(--ease-quart);
+  pointer-events: none;
+}
+
+.hotspot:hover .hotspotLabel,
+.hotspot:focus-visible .hotspotLabel {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* CURRENT LOCATION block — designed terminal callout, bottom-left.
+ * 2px accent left-stripe (no full border), tight stack, glyph + label on top. */
+.locationBlock {
+  position: absolute;
+  bottom: var(--space-6);
+  left: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--color-accent);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  pointer-events: none;
+}
+
+.locationLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.locationGlyph {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.locationValue {
+  font-size: var(--font-lg);
+  color: var(--color-text);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.locationMeta {
+  font-size: var(--font-xs);
+  color: var(--color-accent);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}

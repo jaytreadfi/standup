@@ -1,0 +1,142 @@
+.row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-2) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-canvas);
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+}
+
+.zone {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.zoneCenter {
+  justify-self: start;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.zoneRight {
+  justify-self: end;
+}
+
+/* Brand */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.brandMark {
+  width: 8px;
+  height: 8px;
+  background: var(--color-accent);
+  display: inline-block;
+}
+.brandText {
+  color: var(--color-accent);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+/* Generic dim meta cells */
+.meta {
+  color: var(--color-text-dim);
+  letter-spacing: 0.1em;
+}
+
+/* Vertical separator between cells inside a zone */
+.divider {
+  width: 1px;
+  height: 10px;
+  background: var(--color-border);
+  opacity: 0.4;
+  display: inline-block;
+}
+
+/* OBJ cell — truncates */
+.objCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  overflow: hidden;
+}
+.objLabel {
+  color: var(--color-text-muted);
+  flex: 0 0 auto;
+}
+.objValue {
+  color: var(--color-text-dim);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.08em;
+}
+
+/* Clock — primary glanceable data */
+.clockCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.clockLabel {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+.clockValue {
+  color: var(--color-text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.pipe {
+  color: var(--color-border-strong);
+  font-weight: 400;
+  user-select: none;
+}
+
+.sunriseCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.sunriseValue {
+  color: var(--color-text-dim);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+/* Live pulse indicator */
+.pulse {
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  display: inline-block;
+  opacity: 0.6;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+    opacity: 0.5;
+  }
+}

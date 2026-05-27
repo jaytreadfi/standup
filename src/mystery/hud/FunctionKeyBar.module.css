@@ -1,0 +1,110 @@
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--space-3) var(--space-6);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: 0;
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-quart),
+    background-color var(--dur-fast) var(--ease-quart);
+}
+
+.button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.bracket {
+  color: var(--color-text-muted);
+  transition: color var(--dur-fast) var(--ease-quart);
+}
+
+.label {
+  color: inherit;
+}
+
+.shortcut {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-quart);
+  pointer-events: none;
+}
+
+/* Hover — accent the brackets and lift the label, reveal shortcut */
+.button:hover:not(:disabled) {
+  color: var(--color-text);
+}
+.button:hover:not(:disabled) .bracket {
+  color: var(--color-accent);
+}
+.button:hover:not(:disabled) .shortcut,
+.button:focus-visible:not(:disabled) .shortcut {
+  opacity: 1;
+}
+
+/* Focus — terminal ring */
+.button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  color: var(--color-text);
+}
+.button:focus-visible .bracket {
+  color: var(--color-accent);
+}
+
+/* Pressed / latched — filled accent panel button */
+.button:active:not(:disabled),
+.button[data-pressed='true']:not(:disabled) {
+  background: var(--color-accent);
+  color: var(--color-canvas);
+}
+.button:active:not(:disabled) .bracket,
+.button[data-pressed='true']:not(:disabled) .bracket {
+  color: var(--color-canvas);
+}
+.button:active:not(:disabled) .shortcut,
+.button[data-pressed='true']:not(:disabled) .shortcut {
+  color: var(--color-canvas);
+  opacity: 1;
+}

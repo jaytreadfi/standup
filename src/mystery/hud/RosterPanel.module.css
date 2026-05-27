@@ -1,0 +1,158 @@
+/* RosterPanel — upper-right sidebar.
+ * Eight characters as a tight chat-list: slot · portrait · name/status · suspicion.
+ * No header — labels are inferable from data; less noise, more rhythm.
+ * Brutalist Bloomberg watchlist energy. Zero radius, sharp 1px frames, restrained motion.
+ */
+
+.root {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+
+.list {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: var(--space-7) var(--space-5) var(--space-4);
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+}
+
+/* ---------- Row ---------- */
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px 36px 1fr auto;
+  column-gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) 0 var(--space-2) var(--space-2);
+  margin-left: calc(var(--space-2) * -1); /* keep content flush w/ panel padding while reserving space for active stripe */
+  border-bottom: 1px solid var(--color-divider, var(--color-border));
+  /* 2px border-left reserved for the active stripe; transparent by default keeps grid alignment stable */
+  border-left: 2px solid transparent;
+  background: transparent;
+  transition:
+    background-color var(--dur-fast) var(--ease-quart),
+    border-color var(--dur-fast) var(--ease-quart);
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.row:hover {
+  background-color: rgba(245, 124, 58, 0.04);
+}
+
+.row:hover .name {
+  color: var(--color-text);
+}
+
+.row:hover .portraitWrap {
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+/* ---------- Active (player's current room) ---------- */
+.row[data-active='true'] {
+  border-left-color: var(--color-accent);
+}
+
+.row[data-active='true'] .name {
+  color: var(--color-text);
+}
+
+.row[data-active='false'] .name {
+  color: var(--color-text-dim);
+}
+
+/* ---------- Slot id ---------- */
+.slot {
+  color: var(--color-accent);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Portrait frame ---------- */
+.portraitWrap {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-strong);
+  overflow: hidden;
+  transition: box-shadow var(--dur-fast) var(--ease-quart);
+}
+
+/* ---------- Identity stack (name above, status below) ---------- */
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0; /* let inner ellipses work if a long status appears */
+}
+
+.name {
+  color: var(--color-text-dim);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.06em;
+  line-height: var(--line-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--dur-fast) var(--ease-quart);
+}
+
+/* ---------- Status line ---------- */
+.status {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  line-height: var(--line-tight);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusLocation {
+  color: var(--color-text-dim);
+}
+
+.statusSep {
+  color: var(--color-text-muted);
+}
+
+.statusSuffix {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Badge — tabular suspicion meter ---------- */
+.badge {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.04em;
+  text-align: right;
+  padding-left: var(--space-3);
+  color: var(--color-text-muted);
+  transition: color var(--dur-fast) var(--ease-quart);
+}
+
+.badge[data-tier='warn'] {
+  color: var(--color-warn);
+}
+
+.badge[data-tier='danger'] {
+  color: var(--color-danger);
+}

@@ -1,0 +1,82 @@
+.row {
+  height: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-6);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-canvas);
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 0.7;
+}
+
+.left,
+.right {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.metric {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  color: var(--color-text-muted);
+}
+
+.num {
+  color: var(--color-text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.pipe {
+  color: var(--color-border);
+  opacity: 0.4;
+  user-select: none;
+}
+
+.dot {
+  font-size: 8px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.dotOnline {
+  color: var(--color-success);
+  animation: pulseDot 2.4s var(--ease-soft) infinite;
+}
+
+.dotSave {
+  color: var(--color-success);
+  animation: pulseDot 3s var(--ease-soft) infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dotOnline,
+  .dotSave {
+    animation: none;
+    opacity: 0.8;
+  }
+}

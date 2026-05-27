@@ -1,0 +1,54 @@
+.root {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 720px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  color: var(--color-accent);
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  will-change: transform;
+  z-index: 0;
+}
+
+.center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.left {
+  top: 50%;
+  left: -40px;
+  transform: translateY(-50%);
+}
+
+.right {
+  top: 50%;
+  right: -40px;
+  transform: translateY(-50%);
+}
+
+.corner-tr {
+  top: -120px;
+  right: -80px;
+}
+
+.corner-tl {
+  top: -120px;
+  left: -80px;
+}
+
+.corner-bl {
+  bottom: -120px;
+  left: -80px;
+}
+
+.corner-br {
+  bottom: -120px;
+  right: -80px;
+}

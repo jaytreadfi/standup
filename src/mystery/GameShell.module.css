@@ -1,0 +1,76 @@
+.shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  grid-template-columns: 1fr;
+  padding: var(--gutter-shell);
+  gap: var(--space-3);
+  background: var(--color-canvas);
+  color: var(--color-text);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Subtle vignette — corners ~3% darker than center.
+   Sits above shell background, beneath all content (z-index: 0 + pointer-events: none). */
+.shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 55%,
+    rgba(0, 0, 0, 0.28) 100%
+  );
+}
+
+/* Children stack above the vignette. */
+.shell > * {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 1fr clamp(320px, 24vw, 420px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.modeArea {
+  position: relative;
+  /* Single soft divider between modeArea and sidebar — every other region keeps its own border-less edges. */
+  border-right: var(--border-soft);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.modeFrame {
+  position: absolute;
+  inset: 0;
+}
+
+.sidebar {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.overlayStub {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(10, 10, 10, 0.94);
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: var(--font-lg);
+  z-index: var(--z-overlay, 30);
+  pointer-events: none;
+}

@@ -1,0 +1,16 @@
+.root {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-text);
+  display: inline-block;
+  min-width: 1ch;
+  font-variant-numeric: tabular-nums;
+  transition: color 200ms ease-out;
+}
+
+.locked {
+  color: var(--color-accent);
+  /* Skip the transition into the accent state — instant flash, then ease back. */
+  transition: none;
+}
