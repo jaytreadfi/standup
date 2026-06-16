@@ -1,20 +1,21 @@
 import js from '@eslint/js';
+import globals from 'globals';
 import pluginReact from 'eslint-plugin-react';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
 import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default [
   {
-    ignores: ['dist', 'node_modules', 'ink/*.json'],
+    ignores: ['dist', 'node_modules'],
   },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
-      ecmaVersion: 2021,
+      ecmaVersion: 2022,
       sourceType: 'module',
       globals: {
-        console: 'readonly',
-        process: 'readonly',
+        ...globals.browser,
+        ...globals.node,
       },
       parserOptions: {
         ecmaFeatures: {
@@ -35,10 +36,29 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
       'react/jsx-filename-extension': ['error', { extensions: ['.jsx'] }],
+      // This codebase documents component props with JSDoc, not runtime PropTypes.
+      'react/prop-types': 'off',
     },
     settings: {
       react: {
         version: 'detect',
+      },
+    },
+  },
+  {
+    // Vitest test files use bare global describe/it/expect (vitest globals).
+    files: ['tests/**/*.{js,jsx}', '**/*.test.{js,jsx}'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
       },
     },
   },
