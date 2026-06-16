@@ -12,7 +12,7 @@ export const colors = {
   accentDim: '#7a3e1d',
   text: '#f4efe8',
   textDim: '#9a958f',
-  textMuted: '#5e5b58',
+  textMuted: '#8a857f', // lifted from #5e5b58 to clear WCAG AA (4.5:1) on dark surfaces
   success: '#5fbf6e',
   warn: '#e8a23a',
   danger: '#e84a3a',

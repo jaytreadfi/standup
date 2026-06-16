@@ -59,7 +59,7 @@ export default function AccusationMode() {
       >
         <div className={styles.scroll}>
           <header className={styles.head}>
-            <h1 className={styles.title}>NAME THE SABOTEUR</h1>
+            <h1 className={styles.title}>NAME THE KILLER</h1>
             <p className={styles.warn}>
               <span className={styles.warnGlyph} aria-hidden="true">⚠</span>
               ONE SHOT · NO TAKE-BACKS

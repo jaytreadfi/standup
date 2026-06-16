@@ -75,6 +75,7 @@ export default function DialogueMode() {
   const dlg = useAtomValue(dialogueAtom);
   const currentRoom = useAtomValue(currentRoomAtom);
   const clockMinutes = useAtomValue(clockMinutesAtom);
+  const rootRef = useRef(null);
 
   const characterId = dlg?.characterId;
   const nodeId = dlg?.nodeId;
@@ -99,10 +100,21 @@ export default function DialogueMode() {
     return () => window.removeEventListener('keydown', onKey);
   }, [actions]);
 
+  // Pull keyboard focus into the conversation on entry and on every node change,
+  // so it never strands on <body> after the TALK marker that opened this mode
+  // unmounts. While the line types, the first focusable is the skippable
+  // dialogue box (Enter reveals); once revealed, it's the first choice.
+  useEffect(() => {
+    const focusable = rootRef.current?.querySelector(
+      'button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    focusable?.focus?.();
+  }, [nodeId]);
+
   // Guard: malformed/missing node — render a minimal stub, never crash.
   if (!node) {
     return (
-      <div className={styles.root}>
+      <div className={styles.root} ref={rootRef}>
         <div
           className={styles.bg}
           style={bgUrl ? { backgroundImage: `url(${bgUrl})` } : undefined}
@@ -122,7 +134,7 @@ export default function DialogueMode() {
   const role = speaker?.role ?? '';
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} ref={rootRef}>
       {/* Room scene art, heavily darkened — "in conversation here". */}
       <div
         className={styles.bg}

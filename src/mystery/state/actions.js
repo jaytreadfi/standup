@@ -2,12 +2,12 @@
  * actions.js — the single action layer (game "verbs").
  *
  * Every interactive view calls into useGameActions() rather than poking atoms
- * directly, so all clock costs, telemetry, sunrise checks, and mode transitions
+ * directly, so all clock ticking, telemetry, deadline checks, and mode transitions
  * live in one place. Uses jotai's store.get/set inside callbacks to always read
  * fresh state (no stale closures).
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useStore } from 'jotai';
 
 import * as clock from '@/mystery/engine/clock';
@@ -18,7 +18,7 @@ import { canOpenOverlay } from '@/mystery/engine/canOpenOverlay';
 import { roomById, examineTargetById } from '@/mystery/data/rooms';
 import { clueById } from '@/mystery/data/clues';
 import { dialogue as dialogueData, COLD_OPEN_CHARACTER } from '@/mystery/data/dialogue';
-import { resolveEnding } from '@/mystery/data/endings';
+import { resolveEnding, endings } from '@/mystery/data/endings';
 
 import {
   modeAtom,
@@ -33,6 +33,8 @@ import {
   endingAtom,
   accusationAtom,
   objectiveAtom,
+  announceAtom,
+  alertAtom,
 } from '@/mystery/state/mystery';
 
 const MAX_ACCUSATION_CLUES = 3;
@@ -42,13 +44,13 @@ const MAX_ACCUSATION_CLUES = 3;
 // unreachable and the player is dropped onto a dead-end screen.
 const MIN_CLUES_TO_ACCUSE = MAX_ACCUSATION_CLUES;
 
-const DEFAULT_OBJECTIVE = 'A body on the bullpen floor. Name the killer before first shift — 06:00.';
+const DEFAULT_OBJECTIVE = 'Yibo’s dead on the bullpen floor. Name the killer before David buries it — the board calls at 09:00 tomorrow.';
 
 const FRESH_STATE = {
   mode: 'COLD_OPEN',
   overlay: null,
   mapOpen: false,
-  clockMinutes: 0,
+  clockMinutes: clock.START_MINUTE,
   currentRoom: 'coworking',
   flags: new Set(),
   collectedClues: [],
@@ -67,14 +69,19 @@ export function useGameActions() {
       const get = (a) => store.get(a);
       const set = (a, v) => store.set(a, v);
 
-      /** Advance the clock by an action's cost and force the ending at sunrise. */
-      function advanceClock(action) {
-        const next = clock.advance(get(clockMinutesAtom), action);
+      /**
+       * Real-time clock tick. Time keeps moving on its own — player actions
+       * don't cost minutes. The ticker (useGameClock) calls this on an interval;
+       * it advances only while the player is actively free-roaming (paused in
+       * dialogue, overlays, the map, and every fullscreen mode) and forces the
+       * timeout ending the moment the clock crosses deadline.
+       */
+      function tickClock() {
+        if (get(modeAtom) !== 'FREE_ROAM') return;
+        if (get(overlayAtom) || get(mapOpenAtom)) return;
+        const next = get(clockMinutesAtom) + clock.GAME_MINUTES_PER_REAL_SECOND;
         set(clockMinutesAtom, next);
-        if (clock.isPastSunrise(next) && get(modeAtom) !== 'ENDING') {
-          forceEnding('D');
-        }
-        return next;
+        if (clock.isPastDeadline(next)) forceEnding('D');
       }
 
       function forceEnding(id) {
@@ -84,6 +91,10 @@ export function useGameActions() {
         set(dialogueAtom, null);
         set(examineAtom, null);
         set(modeAtom, 'ENDING');
+        // Assertive SR announcement — the deadline timeout can end the game
+        // mid-exploration, so screen-reader users must hear it immediately.
+        const e = endings[id];
+        set(alertAtom, e ? `Ending reached: ${e.title}. ${e.verdict}.` : `Ending ${id} reached.`);
         saveLoad.recordEnding(id);
         telemetry.event(telemetry.EVENT_NAMES.ENDING_REACHED, { id });
       }
@@ -98,6 +109,9 @@ export function useGameActions() {
           { id: clueId, atMinute: get(clockMinutesAtom), source: source ?? null },
         ]);
         telemetry.event(telemetry.EVENT_NAMES.CLUE_COLLECTED, { id: clueId, source });
+        // Polite SR announcement — logging evidence is the core loop and is
+        // otherwise silent to assistive tech.
+        set(announceAtom, `Evidence logged: ${clueById[clueId].label}.`);
         return true;
       }
 
@@ -127,8 +141,15 @@ export function useGameActions() {
           if (!roomById[roomId] || roomId === get(currentRoomAtom)) return;
           const from = get(currentRoomAtom);
           set(currentRoomAtom, roomId);
-          advanceClock('TRAVEL');
           telemetry.event(telemetry.EVENT_NAMES.ROOM_ENTER, { from, to: roomId });
+          // Polite SR announcement of the new location + clock (the scene swap
+          // is otherwise silent). Travel is free now — the clock only ticks in
+          // real time, so this never ends the game on its own.
+          const room = roomById[roomId];
+          set(
+            announceAtom,
+            `Now in ${room?.label ?? roomId}. Time ${clock.formatClock(get(clockMinutesAtom))}.`,
+          );
         },
 
         // ---- examine ----
@@ -138,17 +159,13 @@ export function useGameActions() {
           if (!canOpenOverlay(get(modeAtom), 'EXAMINE')) return;
           set(examineAtom, { targetId, roomId: target.roomId });
           set(overlayAtom, 'EXAMINE');
-          // First inspection of an EVIDENCE hotspot costs time and yields the
-          // clue; re-reading it is free. Flavor-only hotspots (no clueId) are
-          // always free to read — ambient detail shouldn't be punished with a
-          // 30-minute penalty for zero payoff.
+          // First inspection of an EVIDENCE hotspot yields its clue; re-reading
+          // is a no-op. Examining is free — the real-time clock keeps its own
+          // pace regardless of how much the player pokes around.
           const firstTime = !get(flagsAtom).has(`seen:${targetId}`);
           if (firstTime) {
             setFlag(`seen:${targetId}`);
-            if (target.clueId) {
-              advanceClock('EXAMINE');
-              collectClue(target.clueId, target.roomId);
-            }
+            if (target.clueId) collectClue(target.clueId, target.roomId);
           }
         },
         closeExamine() {
@@ -186,11 +203,8 @@ export function useGameActions() {
           });
           if (choice?.setFlag) setFlag(choice.setFlag);
           if (choice?.grantClue) collectClue(choice.grantClue, d.characterId);
-          advanceClock('DIALOGUE_NODE');
-          // If that clock tick crossed sunrise, advanceClock already forced the
-          // timeout ending (mode → ENDING, dialogue cleared). Bail before the
-          // writes below would clobber it back to FREE_ROAM / a stale node.
-          if (get(modeAtom) === 'ENDING') return;
+          // Talking is free — the clock pauses during dialogue, so a conversation
+          // can never cross deadline mid-node.
           if (choice?.to) {
             set(dialogueAtom, { characterId: d.characterId, nodeId: choice.to });
           } else {
@@ -259,15 +273,33 @@ export function useGameActions() {
           set(endingAtom, FRESH_STATE.ending);
           set(accusationAtom, { suspectId: null, selectedClueIds: [] });
           set(objectiveAtom, FRESH_STATE.objective);
+          set(announceAtom, '');
+          set(alertAtom, '');
         },
 
         // expose for views that need ad-hoc effects
+        tickClock,
         collectClue,
         setFlag,
       };
     },
     [store],
   );
+}
+
+/**
+ * useGameClock — drives the real-time clock. Mount once (from <GameShell>).
+ *
+ * Fires actions.tickClock() on a fixed interval; tickClock itself decides
+ * whether to advance (only while free-roaming) and forces the deadline timeout.
+ * The interval is set up once because useGameActions() is stable for a store.
+ */
+export function useGameClock() {
+  const actions = useGameActions();
+  useEffect(() => {
+    const id = setInterval(() => actions.tickClock(), clock.CLOCK_TICK_MS);
+    return () => clearInterval(id);
+  }, [actions]);
 }
 
 export { COLD_OPEN_CHARACTER };

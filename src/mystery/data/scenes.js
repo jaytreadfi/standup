@@ -8,19 +8,16 @@
  * Pure data resolution. No React, no Jotai.
  */
 
-const sceneModules = import.meta.glob('../../assets/scenes/*.png', {
+// Scene art ships as JPEG (opaque full-bleed photography — far smaller than PNG);
+// the glob also accepts PNG so either format resolves by key during a migration.
+const sceneModules = import.meta.glob('../../assets/scenes/*.{jpg,jpeg,png}', {
   eager: true,
   query: '?url',
   import: 'default',
 });
 
+// Portraits stay PNG — they're transparent 3x3 expression sprite-sheets.
 const portraitModules = import.meta.glob('../../assets/portraits/*.png', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-});
-
-const floorplanModules = import.meta.glob('../../assets/floorplan/*.png', {
   eager: true,
   query: '?url',
   import: 'default',
@@ -30,7 +27,7 @@ const floorplanModules = import.meta.glob('../../assets/floorplan/*.png', {
 function indexByBasename(modules) {
   const out = {};
   for (const [path, url] of Object.entries(modules)) {
-    const base = path.split('/').pop().replace(/\.png$/, '');
+    const base = path.split('/').pop().replace(/\.(jpe?g|png|webp)$/i, '');
     out[base] = url;
   }
   return out;
@@ -38,7 +35,6 @@ function indexByBasename(modules) {
 
 export const sceneUrls = indexByBasename(sceneModules);
 export const portraitUrls = indexByBasename(portraitModules);
-export const floorplanUrls = indexByBasename(floorplanModules);
 
 /**
  * Resolve a scene asset key to its bundled URL.

@@ -13,6 +13,18 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split heavy, rarely-changing libs into their own long-cache chunks so
+        // a code change doesn't bust the framer-motion / React download.
+        manualChunks: {
+          'vendor-motion': ['framer-motion'],
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,

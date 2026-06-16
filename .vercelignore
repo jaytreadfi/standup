@@ -1,0 +1,4 @@
+# Dead source masters — 49MB, not imported by the app
+src/assets/portraits-raw
+# Local working notes — not needed for the build
+tasks

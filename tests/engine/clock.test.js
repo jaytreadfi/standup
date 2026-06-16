@@ -1,55 +1,62 @@
 import {
-  TIME_COSTS,
-  advance,
   formatClock,
   periodFor,
-  isPastSunrise,
-  SUNRISE_MINUTE,
+  isPastDeadline,
+  START_MINUTE,
+  DEADLINE_MINUTE,
+  DAY_LENGTH_MINUTES,
+  REAL_SECONDS_PER_DAY,
+  GAME_MINUTES_PER_REAL_SECOND,
+  CLOCK_TICK_MS,
 } from '@/mystery/engine/clock';
 
-describe('TIME_COSTS', () => {
-  it('exports TIME_COSTS with the expected action costs', () => {
-    expect(TIME_COSTS.TRAVEL).toBe(20);
-    expect(TIME_COSTS.EXAMINE).toBe(30);
-    expect(TIME_COSTS.DIALOGUE_NODE).toBe(25);
-    expect(TIME_COSTS.OVERLAY_OPEN).toBe(0);
-    expect(TIME_COSTS.ACCUSATION_OPEN).toBe(0);
+describe('START_MINUTE', () => {
+  it('equals 0 (09:00 AM — the workday opens)', () => {
+    expect(START_MINUTE).toBe(0);
+  });
+
+  it('formats as 09:00 AM', () => {
+    expect(formatClock(START_MINUTE)).toBe('09:00 AM');
   });
 });
 
-describe('SUNRISE_MINUTE', () => {
-  it('equals 1260 (06:00 AM — the advertised board deadline)', () => {
-    expect(SUNRISE_MINUTE).toBe(1260);
+describe('DEADLINE_MINUTE', () => {
+  it('equals 1440 (09:00 AM next day — 24 hours later)', () => {
+    expect(DEADLINE_MINUTE).toBe(1440);
   });
 
-  it('formats as 06:00 AM, matching every player-facing deadline string', () => {
-    expect(formatClock(SUNRISE_MINUTE)).toBe('06:00 AM');
+  it('formats as 09:00 AM, matching the board-call deadline string', () => {
+    expect(formatClock(DEADLINE_MINUTE)).toBe('09:00 AM');
   });
 });
 
-describe('advance', () => {
-  it('returns 20 for TRAVEL from minute 0', () => {
-    expect(advance(0, 'TRAVEL')).toBe(20);
+describe('real-time day window', () => {
+  it('the day is a full 24 hours long (09:00 → 09:00 next day)', () => {
+    expect(DAY_LENGTH_MINUTES).toBe(1440);
   });
 
-  it('returns 30 for EXAMINE from minute 0', () => {
-    expect(advance(0, 'EXAMINE')).toBe(30);
+  it('burns the day in ~24 real minutes', () => {
+    expect(REAL_SECONDS_PER_DAY).toBe(1440);
   });
 
-  it('returns 25 for DIALOGUE_NODE from minute 0', () => {
-    expect(advance(0, 'DIALOGUE_NODE')).toBe(25);
+  it('advances exactly one in-game minute per real second', () => {
+    expect(GAME_MINUTES_PER_REAL_SECOND).toBe(1);
   });
 
-  it('returns unchanged minutes for OVERLAY_OPEN (0 cost)', () => {
-    expect(advance(75, 'OVERLAY_OPEN')).toBe(75);
+  it('a full untouched playthrough crosses the deadline right at the budget', () => {
+    const elapsed = START_MINUTE + GAME_MINUTES_PER_REAL_SECOND * REAL_SECONDS_PER_DAY;
+    expect(elapsed).toBe(DEADLINE_MINUTE);
+    expect(isPastDeadline(elapsed)).toBe(true);
   });
 
-  it('returns unchanged minutes for ACCUSATION_OPEN (0 cost)', () => {
-    expect(advance(0, 'ACCUSATION_OPEN')).toBe(0);
+  it('ticks on a one-second cadence', () => {
+    expect(CLOCK_TICK_MS).toBe(1000);
   });
 
-  it('throws for an unrecognized action', () => {
-    expect(() => advance(0, 'BOGUS')).toThrow();
+  it('walks the scene art from morning into night across the day', () => {
+    expect(periodFor(START_MINUTE)).toBe('morning');
+    expect(periodFor(360)).toBe('dusk');
+    expect(periodFor(600)).toBe('night');
   });
 });
 
@@ -78,11 +85,11 @@ describe('formatClock', () => {
     expect(formatClock(900)).toBe('12:00 AM');
   });
 
-  it('formats minute 1260 as 06:00 AM (sunrise threshold; 9 AM start + 21h)', () => {
-    expect(formatClock(1260)).toBe('06:00 AM');
+  it('formats minute 1200 as 05:00 AM (next day, deep in the night)', () => {
+    expect(formatClock(1200)).toBe('05:00 AM');
   });
 
-  it('formats minute 1440 as 09:00 AM (full 24h cycle from 9 AM start)', () => {
+  it('formats minute 1440 as 09:00 AM (full 24h cycle; the deadline)', () => {
     expect(formatClock(1440)).toBe('09:00 AM');
   });
 });
@@ -109,16 +116,16 @@ describe('periodFor', () => {
   });
 });
 
-describe('isPastSunrise', () => {
-  it('returns false at minute 0', () => {
-    expect(isPastSunrise(0)).toBe(false);
+describe('isPastDeadline', () => {
+  it('returns false at minute 0 (workday start)', () => {
+    expect(isPastDeadline(0)).toBe(false);
   });
 
-  it('returns false at minute 1259 (one before sunrise)', () => {
-    expect(isPastSunrise(1259)).toBe(false);
+  it('returns false at minute 1439 (one before the deadline)', () => {
+    expect(isPastDeadline(1439)).toBe(false);
   });
 
-  it('returns true at minute 1260 (sunrise)', () => {
-    expect(isPastSunrise(1260)).toBe(true);
+  it('returns true at minute 1440 (the deadline)', () => {
+    expect(isPastDeadline(1440)).toBe(true);
   });
 });

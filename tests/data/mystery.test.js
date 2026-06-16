@@ -11,10 +11,14 @@ describe('case wiring — "Last One Out"', () => {
     expect(suspectIds.has('david')).toBe(true);
   });
 
-  it('the victim is Sam and is excluded from the suspect board', () => {
-    expect(victim.id).toBe('sam');
+  it('the victim is Yibo and is excluded from the suspect board', () => {
+    expect(victim.id).toBe('yibo');
     expect(victim.dead).toBe(true);
-    expect(suspectIds.has('sam')).toBe(false);
+    expect(suspectIds.has('yibo')).toBe(false);
+  });
+
+  it('Sam is now a living, accusable suspect (the office admin)', () => {
+    expect(suspectIds.has('sam')).toBe(true);
   });
 
   it('Jamie has been removed entirely', () => {

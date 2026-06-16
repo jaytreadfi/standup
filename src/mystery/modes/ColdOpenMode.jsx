@@ -9,8 +9,8 @@ import styles from './ColdOpenMode.module.css';
 /**
  * ColdOpenMode — the cinematic briefing beat (modeAtom === 'COLD_OPEN').
  *
- * Staged reveal of David's briefing: the body on the floor, the night-desk
- * intern, first shift at 06:00. Lines are drawn straight from data/dialogue.david
+ * Staged reveal of David's briefing: Yibo's body on the floor, the new hire,
+ * the board call deadline. Lines are drawn straight from data/dialogue.david
  * so the cold open stays consistent with the in-room conversation. Ends on a
  * single decisive "[ BEGIN SHIFT ]" that hands control back to actions.beginShift().
  */
@@ -24,9 +24,9 @@ const DAVID_B = dialogue.david.nodes.b.text;
 
 // Terminal preamble — TREAD/OS dispatch framing above the briefing copy.
 const PREAMBLE = [
-  '> TREAD/OS · NIGHT DESK',
-  '> STORM HOLD · FIRST SHIFT 06:00',
-  '> OPERATOR: INTERN · UNVERIFIED',
+  '> TREAD/OS · FLOOR 40 · 09:00',
+  '> BODY ON FLOOR · BOARD CALL 09:00 TMRW',
+  '> OPERATOR: NEW HIRE · UNVERIFIED',
 ];
 
 // The briefing body, attributed to David, revealed line by line.
@@ -75,7 +75,7 @@ export default function ColdOpenMode() {
           >
             <div className={styles.kicker}>NIGHT DESK · CASE 01</div>
             <h1 className={styles.title}>
-              <ScrambleText target="SAM IS DEAD" duration={520} />
+              <ScrambleText target="YIBO IS DEAD" duration={520} />
             </h1>
             <motion.div
               className={styles.underline}
@@ -110,7 +110,7 @@ export default function ColdOpenMode() {
             transition={{ duration: 0.32, delay: 0.85, ease: EASE_QUART }}
           >
             <span className={styles.missionGlyph} aria-hidden="true">▸</span>
-            WALK THE FLOOR. READ WHAT’S LEFT. NAME THE KILLER BEFORE FIRST SHIFT.
+            WALK THE FLOOR. READ WHAT’S LEFT. NAME THE KILLER BEFORE HE BURIES IT.
           </motion.div>
 
           {/* The single decisive action. */}

@@ -13,6 +13,7 @@ import { useEffect, useRef } from 'react';
 import * as saveLoad from '@/mystery/engine/saveLoad';
 import * as telemetry from '@/mystery/engine/telemetry';
 import { canOpenOverlay as canOpenOverlayFn } from '@/mystery/engine/canOpenOverlay';
+import { START_MINUTE } from '@/mystery/engine/clock';
 import { charactersInRoom } from '@/mystery/engine/schedule';
 import { suspicionByCharacter } from '@/mystery/engine/suspicion';
 import { characters, suspects } from '@/mystery/data/characters';
@@ -27,7 +28,7 @@ const _loaded = saveLoad.load();
 const _initial = _loaded ?? {
   mode: 'BOOT',
   overlay: null,
-  clockMinutes: 0,
+  clockMinutes: START_MINUTE,
   currentRoom: 'coworking',
   flags: [],
   collectedClues: [],
@@ -35,7 +36,7 @@ const _initial = _loaded ?? {
   examine: null,
   ending: null,
   accusation: { suspectId: null, selectedClueIds: [] },
-  objective: 'A body on the bullpen floor. Name the killer before first shift — 06:00.',
+  objective: 'Yibo’s dead on the bullpen floor. Name the killer before David buries it — the board calls at 09:00 tomorrow.',
 };
 
 if (_loaded) {
@@ -53,7 +54,7 @@ export const modeAtom = atom(_initial.mode);
 export const overlayAtom = atom(_initial.overlay);
 
 /** @type {import('jotai').PrimitiveAtom<number>} */
-export const clockMinutesAtom = atom(_initial.clockMinutes);
+export const clockMinutesAtom = atom(_initial.clockMinutes ?? START_MINUTE);
 
 /** @type {import('jotai').PrimitiveAtom<string>} */
 export const currentRoomAtom = atom(_initial.currentRoom ?? 'coworking');
@@ -68,7 +69,7 @@ export const collectedCluesAtom = atom(
   Array.isArray(_initial.collectedClues) ? _initial.collectedClues : [],
 );
 
-/** @type {import('jotai').PrimitiveAtom<{storyId: string, currentText: string, choices: Array, history: Array}|null>} */
+/** @type {import('jotai').PrimitiveAtom<{characterId: string, nodeId: string}|null>} */
 export const dialogueAtom = atom(_initial.dialogue ?? null);
 
 /** @type {import('jotai').PrimitiveAtom<{targetId: string, roomId: string}|null>} */
@@ -91,8 +92,20 @@ export const mapOpenAtom = atom(false);
 
 /** @type {import('jotai').PrimitiveAtom<string>} */
 export const objectiveAtom = atom(
-  _initial.objective ?? 'A body on the bullpen floor. Name the killer before first shift — 06:00.',
+  _initial.objective ?? 'Yibo’s dead on the bullpen floor. Name the killer before David buries it — the board calls at 09:00 tomorrow.',
 );
+
+/**
+ * Transient screen-reader announcement channels — NOT persisted, set by the
+ * action layer and rendered into visually-hidden aria-live regions by the
+ * <Announcer> in GameShell. `announceAtom` is polite (evidence logged, room
+ * changes); `alertAtom` is assertive (the forced sunrise ending). Kept as two
+ * atoms so routine and urgent messages never share a politeness.
+ * @type {import('jotai').PrimitiveAtom<string>}
+ */
+export const announceAtom = atom('');
+/** @type {import('jotai').PrimitiveAtom<string>} */
+export const alertAtom = atom('');
 
 // ---------------------------------------------------------------------------
 // Derived (read-only) atoms — stubs; real logic lands in later phases.

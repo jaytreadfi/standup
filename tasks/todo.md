@@ -96,3 +96,96 @@ playtesters (happy-path/wrong-accuse/timeout/chaos/first-timer); 78 candidates �
 **Verified after fixes:** `npm run lint` ✓ clean · 61 unit tests ✓ · build ✓ · Playwright: full solve → **Ending A**, clock-burn → **Ending D** at 06:00, dialogue→clue grant, focus-trap inert — all with **0 console errors**, portraits render full faces.
 
 **Deferred (optional, not defects):** red-herring suspicion for Peem/Jamie (design choice — keeps evidence pointing cleanly at Sam); accusation-screen negative space (#42, cosmetic); ending-screen animation skip; sunrise-countdown urgency styling (the 06:00 readout is now accurate).
+
+> ⚠️ **STALE — pre-"Last One Out" notes.** The two "second hardening pass" lines above that mention **Jamie**, **Dena→coffee-ring/Ching→alibi-note/Jamie→late-badge** grants, and "evidence pointing cleanly at **Sam**" describe the *abandoned* corporate-sabotage / Sam-as-culprit story. The shipped game is **"Last One Out"**: victim = Sam, **killer = David**, patsy = Poncho; Jamie is not in the cast. Real dialogue grants are **Jay→witness-argument, Peem→earwitness-thud, Ching→ching-motive** (see `data/dialogue.js`). Kept the history intact; this note supersedes it.
+
+---
+
+## Review — 88-agent senior-dev audit + a11y/perf fix pass (2026-06-16)
+
+Ran a `find → adversarially-verify → synthesize` Workflow: 10 specialist auditors (narrative, data-integrity, engine, state, React, UX, a11y, perf, CSS, tests) → 77 candidates → **72 confirmed** (5 killed as false positives by skeptic verifiers).
+
+**Headline:** the suspected mystery-vs-data drift was a **false alarm** — suspicion correctly ranks **David #1** (raw 17 vs 1), Sam (victim) is excluded, Jamie is gone from code. Stale "Sam/Jamie" refs survive only in docs + orphaned assets (now corrected). No blockers; 72 unit tests / lint / build all green at baseline.
+
+**Implemented (user picked the "quick-win correctness" + "a11y/perf" bundles):**
+
+Quick-win correctness:
+1. `AccusationMode` headline `NAME THE SABOTEUR` → **`NAME THE KILLER`** (last leftover string from the abandoned sabotage premise; it's a murder).
+2. `actions.openExamine` could log a **phantom clue after the sunrise timeout ending** fired → added `mode === 'ENDING'` bail after `advanceClock('EXAMINE')` (mirrors the `chooseDialogue` guard).
+3. `clock.formatClock` hardened against **NaN/Infinity/negative** (corrupt persisted clock) → finite guard + true modulo wrap (existing 25 clock tests still green).
+4. Removed dead assets: `portraits/jamie.png` (removed character), `floorplan/floor-01.png` + dir + the `floorplanModules`/`floorplanUrls` resolver in `scenes.js` (MapOverlay dropped the floorplan). Fixed stale `dialogueAtom` JSDoc shape.
+
+Accessibility:
+5. Shell-level `<Announcer>` (polite + assertive `aria-live`, mounted above the fullscreen/HUD split so it survives mode changes) → evidence-logged + room-change are announced; the **forced sunrise ending fires an assertive alert** (was silent to screen readers).
+6. `DialogueMode` now pulls keyboard focus into the conversation on entry + each node (was dropping to `<body>`, choices unreachable).
+7. `<MotionConfig reducedMotion="user">` wraps the shell so framer's WAAPI transforms honor `prefers-reduced-motion` (the CSS `@media` rule didn't cover those).
+8. `--color-text-muted` / `textMuted` lifted `#5e5b58` → **`#8a857f`** (~2.8:1 → ~5.2:1, clears WCAG AA on info-bearing text).
+9. Responsive viewport: `width=1280` → **`width=device-width, initial-scale=1`** (re-enables zoom/reflow + the author's existing responsive CSS).
+
+Performance:
+10. **Scene art PNG → JPEG q90** via `sips` (zero new deps; opaque full-bleed art): scenes **21 MB → 3.5 MB** (~6×). `scenes.js` glob accepts `*.{jpg,jpeg,png}`.
+11. `FreeRoamMode` **preloads** all rooms' art for the current period (`new Image()`) + `decoding="async"` on the scene img → travel/period swaps no longer pop in (verified: all 6 day scenes fetch 200 on entry).
+12. `vite.config` `manualChunks` splits **framer-motion** + **React** into cacheable vendor chunks → app chunk **378 KB → 87 KB** (+ vendor-motion 129 KB, vendor-react 160 KB).
+
+**Verified:** `npm run lint` ✓ clean · **72 unit tests** ✓ · `npm run build` ✓ · Playwright on the built app → boot→cold-open→free-roam, **scenes render** (JPEG `naturalWidth` 1376, all images 200), **0 console errors**, screenshot confirms no JPEG banding in the noir art.
+
+**Not done (offered, awaiting decision):**
+- **Test safety net + CI** bundle (`suspicion.test.js`, `actions.test.js`, `integrity.test.js`, GitHub Actions) — protects the killer-ranking invariant + timeout path.
+- **Neo-noir tone fix** (design call): re-base clock to night so the murder isn't in 9 AM daylight; tune action costs so the sunrise deadline bites (Ending D is currently ~unreachable); decide the suspicion meter's role (it solves the deduction for the player).
+- **Portrait WebP/AVIF** (5 MB, transparent) needs a `sharp`-based build plugin — deferred as a dependency-adding change; scenes already got the big win via JPEG.
+- `src/assets/portraits-raw/` (49 MB dead source masters) left in place — removal is a separate call (won't reclaim git history without a rewrite).
+
+---
+
+## Review — Story rewrite + real-time clock (2026-06-16)
+
+**Goal:** rewrite the case as the real Tread team, kill **Yibo** (visiting cofounder) instead of
+Sam, make the plot twistier/longer, and switch the clock to "just keep ticking" in real time so
+player movement no longer costs minutes.
+
+**Done & verified (74 tests pass, lint clean, Playwright playtest 0 console errors):**
+- **Recast (`data/characters.js`):** victim = **Yibo** (V1, no portrait); 7 living suspects —
+  David(CEO/killer), Peem(PM), Poncho(dev/patsy), Jay(Marketing), Ching(UX), Dena(Data), **Sam now
+  Office Admin & the player's ally** (was the victim). Two drivers (Poncho+Sam) share the elevator.
+- **New motive = the company** (David faked the raise numbers + diluted absentee cofounder Yibo;
+  Yibo came to pull his engine & blow up the round). Reskinned `clues.js`, `rooms.js`, `endings.js`
+  — **clue ids/weights/`TRUE_CULPRIT`/`PATSY` unchanged**, so `resolveEnding` + tests held.
+- **Dialogue (`dialogue.js`) rewritten in each teammate's real voice** (per the team-breakdown doc)
+  with Bangkok in-jokes (CentralWorld lunches, kart nights, condos next door, who drives). Sam points
+  you at the badge log + clears Poncho; Dena breaks down as the unwitting accomplice + fraud witness.
+- **Real-time clock:** `engine/clock.js` dropped `TIME_COSTS`/`advance()`; added `START_MINUTE`(02:00),
+  real-time constants. `state/actions.js` `tickClock()` + `useGameClock()` (mounted in GameShell) advance
+  the clock ~0.267 min/real-sec, pause in dialogue/overlays/map, force ending D at 06:00. Travel/examine/
+  dialogue are now free. `MapOverlay` "+20 MIN" → "▸ MOVE". `saveLoad.SCHEMA_VERSION` → 3 (old saves drop).
+- **Cosmetic:** cold open "YIBO IS DEAD" + new preamble; BootMode timestamp 02:00; objective text.
+- Playtested: clock 02:00→02:01 over 6s, frozen while map open; full accuse→**Ending A** path works.
+
+**Notes / not done:** the day/dusk scene art now goes unused (game is all-night by design). Suspicion
+meter still solves the deduction for the player (pre-existing design call, untouched). No view-layer tests
+added.
+
+---
+
+## Review — Morning start + 24h real-time clock (2026-06-16, follow-up)
+
+**User feedback:** the game shouldn't be all-night — it should start in the **morning** like a workday
+and progress through the day. The old per-action time cost (20 min/room) made the in-game day fly by.
+
+**Done & verified (74 tests pass, lint clean, Playwright 0 console errors):**
+- **Clock model flipped to a full workday** (`engine/clock.js`): `START_MINUTE = 0` (09:00 AM),
+  `DEADLINE_MINUTE = 1440` (09:00 next day = 24h), `GAME_MINUTES_PER_REAL_SECOND = 1` (1 in-game min /
+  real sec → whole day ≈ 24 real min). Renamed `SUNRISE_MINUTE`→`DEADLINE_MINUTE`, `isPastSunrise`→
+  `isPastDeadline` (rippled to actions.js + clock.test.js).
+- **Scene art now walks morning → dusk → night** as the clock advances (verified: minute 690 → "08:30
+  PM · NIGHT" + night art). The day/dusk/night art is no longer wasted.
+- **Framing → morning discovery:** murder happened last night; team finds the body on a workday so
+  everyone's naturally present and witnesses recount last night. Deadline = David's **board call at
+  09:00 tomorrow**. Updated David's cold-open/dialogue, Jay/Peem ("last night"), Ching's escape
+  timeline, the objective, cold-open preamble + mission line, BootMode stamp, HUD label ("BOARD CALL
+  09:00"), and ending D ("BOARD CALL / a full day and a night later").
+- `saveLoad.SCHEMA_VERSION` → 4 (discards the interim night-version save). Clock-test rewritten for the
+  24h model; stale "sunrise/first shift/06:00" comments cleaned up.
+
+**Tuning note:** the deadline is a soft fail-safe — at 1 min/sec it's 24 real min away, so players accuse
+when ready and the day is mostly atmosphere/realism (low pressure, as requested). The rate is one
+constant (`GAME_MINUTES_PER_REAL_SECOND`) if it ever needs to feel faster/slower.

@@ -1,13 +1,16 @@
 import { useAtomValue, useSetAtom } from 'jotai';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import {
   modeAtom,
   overlayAtom,
   mapOpenAtom,
+  announceAtom,
+  alertAtom,
   useTrackModeChanges,
   useTrackOverlayChanges,
 } from '@/mystery/state/mystery';
+import { useGameClock } from '@/mystery/state/actions';
 import * as telemetry from '@/mystery/engine/telemetry';
 
 import BootMode from '@/mystery/modes/BootMode.jsx';
@@ -29,6 +32,40 @@ import RosterPanel from '@/mystery/hud/RosterPanel.jsx';
 import RecentEvidencePanel from '@/mystery/hud/RecentEvidencePanel.jsx';
 
 import styles from './GameShell.module.css';
+
+// Visually-hidden but screen-reader-available. Standard sr-only clip pattern.
+const SR_ONLY = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: 0,
+  margin: '-1px',
+  overflow: 'hidden',
+  clip: 'rect(0 0 0 0)',
+  whiteSpace: 'nowrap',
+  border: 0,
+};
+
+/**
+ * Off-screen aria-live regions driven by the action layer. Mounted ABOVE the
+ * fullscreen/HUD branch split so it survives mode changes (a freshly-mounted
+ * live region won't re-announce), letting the forced sunrise ending and routine
+ * evidence/travel updates reach assistive tech.
+ */
+function Announcer() {
+  const polite = useAtomValue(announceAtom);
+  const assertive = useAtomValue(alertAtom);
+  return (
+    <>
+      <div aria-live="polite" aria-atomic="true" style={SR_ONLY}>
+        {polite}
+      </div>
+      <div role="alert" aria-live="assertive" aria-atomic="true" style={SR_ONLY}>
+        {assertive}
+      </div>
+    </>
+  );
+}
 
 // Cinematic / focused modes — render full-screen, no HUD chrome.
 const FULLSCREEN_MODES = {
@@ -53,6 +90,7 @@ export default function GameShell() {
 
   useTrackModeChanges();
   useTrackOverlayChanges();
+  useGameClock();
 
   // While an overlay/map is open, mark the background HUD inert so the focus
   // trap is real: Tab can't reach controls behind the scrim and they're not
@@ -76,28 +114,24 @@ export default function GameShell() {
   }, []);
 
   const FullscreenMode = FULLSCREEN_MODES[mode];
-  if (FullscreenMode) {
-    return (
-      <div className={styles.fullscreenShell}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={mode}
-            className={styles.fullscreenFrame}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <FullscreenMode />
-          </motion.div>
-        </AnimatePresence>
-      </div>
-    );
-  }
-
   const ActiveMode = HUD_MODES[mode] || FreeRoamMode;
 
-  return (
+  const content = FullscreenMode ? (
+    <div className={styles.fullscreenShell}>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={mode}
+          className={styles.fullscreenFrame}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <FullscreenMode />
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  ) : (
     <>
       <div className={styles.shell} ref={shellRef}>
         <TerminalStatusRow />
@@ -135,5 +169,15 @@ export default function GameShell() {
         {mapOpen && <MapOverlay key="map" />}
       </AnimatePresence>
     </>
+  );
+
+  // MotionConfig honors prefers-reduced-motion for framer's WAAPI transforms
+  // (the CSS @media rule alone doesn't cover those). Announcer sits above the
+  // branch split so its live regions persist across mode changes.
+  return (
+    <MotionConfig reducedMotion="user">
+      <Announcer />
+      {content}
+    </MotionConfig>
   );
 }

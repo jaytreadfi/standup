@@ -31,7 +31,7 @@ body,
   --color-accent-dim: #7a3e1d;
   --color-text: #f4efe8;
   --color-text-dim: #9a958f;
-  --color-text-muted: #5e5b58;
+  --color-text-muted: #8a857f; /* lifted from #5e5b58 to clear WCAG AA (4.5:1) on dark surfaces */
   --color-success: #5fbf6e;
   --color-warn: #e8a23a;
   --color-danger: #e84a3a;

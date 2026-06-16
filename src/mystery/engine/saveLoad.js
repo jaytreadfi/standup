@@ -1,6 +1,6 @@
 import { getItem, setItem, removeItem } from '@/lib/safeStorage';
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 4;
 export const STATE_KEY = 'tread-mystery-state-v1';
 export const ENDINGS_KEY = 'tread-mystery-endings-v1';
 

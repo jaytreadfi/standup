@@ -8,7 +8,12 @@
  * The evidence reads "accident / look at Poncho" on the surface and resolves to
  * David once the player actually looks. evidenceAgainst reflects the TRUTH — the
  * suspicion meter is a truth-tracker; the misdirection is carried by the people
- * who keep telling you it was an accident.
+ * (David, Dena) who keep telling you it was an accident.
+ *
+ * The motive is the company: Yibo — the absentee cofounder who wrote the core
+ * engine — flew in, pulled the real numbers, and found David faking the growth
+ * for a new raise while quietly diluting him. Yibo came to pull his code and burn
+ * the round down. David got there first.
  *
  * weight: 'WEAK' | 'CORE' | 'HEAVY'  → numeric strength in WEIGHT_VALUE.
  */
@@ -25,15 +30,15 @@ export const clues = [
   {
     id: 'the-body',
     label: 'THE BODY',
-    description: 'Sam, on the bullpen floor. A defensive bruise on the forearm, a chair knocked the wrong way, and Sam’s phone — gone. Nobody stages a fall and pockets the phone. This was murder.',
+    description: 'Yibo, between the desks. A gash above the temple that matches the desk corner a little too neatly, a chair shoved wrong, and his laptop and phone — gone. Nobody tidies up after a man who just trips. This was murder, dressed as a bad night.',
     weight: 'CORE',
     evidenceAgainst: ['david'],
     source: 'coworking',
   },
   {
     id: 'retrieved-proof',
-    label: 'RETRIEVED PROOF',
-    description: 'In David’s desk drawer: a burner phone and a yellowed clipping about a hit-and-run, years back, never solved. The thing Sam was holding over him — back in his hands tonight.',
+    label: "YIBO'S LAPTOP",
+    description: "Half-shoved under David's desk: Yibo's laptop, still warm. On it, the raw growth numbers and the reversion clause that hands the core engine back to whoever wrote it. The two things that could end David's raise — back in David's hands tonight.",
     weight: 'HEAVY',
     evidenceAgainst: ['david'],
     source: 'office',
@@ -41,15 +46,15 @@ export const clues = [
   {
     id: 'two-glasses',
     label: 'TWO GLASSES',
-    description: 'Two whiskey glasses by the pantry sink, set down around 2 a.m. One still has Sam’s prints. The other is wiped clean — too clean.',
+    description: "Two whiskey glasses by the pantry sink, set down around 2 a.m. — Yibo's airport-gift bottle, the one nobody can find now. One glass still has Yibo's prints. The other is wiped clean. Too clean.",
     weight: 'CORE',
     evidenceAgainst: ['david'],
     source: 'pantry',
   },
   {
     id: 'shredded-letter',
-    label: 'SHREDDED LETTER',
-    description: 'Confetti in the shredder, reassembled: the clipping and a note in Sam’s hand — "last time. then it’s done." Sam printed the proof to end it. Someone fed it to the blades.',
+    label: 'SHREDDED PRINTOUT',
+    description: 'Confetti in the shredder, reassembled: the real metrics next to the deck’s faked ones, and a line in Yibo’s hand — "the round is a lie. I’m pulling the engine. — Y." Yibo printed the proof to end it. Someone fed it to the blades.',
     weight: 'HEAVY',
     evidenceAgainst: ['david'],
     source: 'printer',
@@ -57,15 +62,15 @@ export const clues = [
   {
     id: 'scrubbed-badge',
     label: 'SCRUBBED BADGE LOG',
-    description: 'The access log shows badge #D2 (Sam) in, never out. And a gap where #D1 — David’s — was deleted, with a re-entry at 01:55. David swore he left at midnight.',
+    description: 'The access log shows guest badge V1 (Yibo) up at 21:40, never down. And a hole where D1 — David’s — should be, deleted, with a quiet re-entry stamp at 01:55. David told everyone he karted home with the rest. Only two badges can edit this log: admin’s, and his.',
     weight: 'HEAVY',
     evidenceAgainst: ['david'],
     source: 'elevator',
   },
   {
     id: 'owed-note',
-    label: 'PONCHO’S IOU',
-    description: 'A crumpled IOU in Poncho’s jacket on the lounge — a lot of money owed to Sam. Looks damning. It’s also dated weeks back, and already torn down the middle.',
+    label: "PONCHO'S GRUDGE",
+    description: "In Poncho's jacket on the lounge: a printout of a thread where he tells Yibo the rewrite happens “over my dead body.” Looks like a motive. It’s also three weeks old, and scrawled across the bottom in Poncho’s hand: “we’re good. beers on me. —P.”",
     weight: 'WEAK',
     evidenceAgainst: ['poncho'],
     source: 'sofa',
@@ -75,7 +80,7 @@ export const clues = [
   {
     id: 'witness-argument',
     label: 'THE ARGUMENT',
-    description: 'Jay heard David and Sam tearing into each other in the office near midnight — "years ago," through the glass. Not a work fight. And David told everyone he’d gone home.',
+    description: 'Jay heard David and Yibo tearing into each other in the office near midnight — "the numbers are a lie and you know it," through the glass. Not a work fight. And David swore to everyone he’d gone home.',
     weight: 'CORE',
     evidenceAgainst: ['david'],
     source: 'jay',
@@ -83,15 +88,15 @@ export const clues = [
   {
     id: 'earwitness-thud',
     label: 'THE THUD',
-    description: 'Peem heard it from the printer nook around 2 a.m. — a thud in the bullpen, then a tall, calm figure walking, not running, to the elevator.',
+    description: 'Peem heard it from the printer nook around 2 a.m. — a thud in the bullpen, then dead air. A moment later a tall, calm figure walked, not ran, to the elevator.',
     weight: 'CORE',
     evidenceAgainst: ['david'],
     source: 'peem',
   },
   {
     id: 'ching-motive',
-    label: 'CHING’S SECRET',
-    description: 'Sam was bleeding Ching too — something personal. A real motive. But Ching had a bag packed and a cab booked for half four — after the murder, headed away from it.',
+    label: "CHING'S SECRET",
+    description: 'Yibo had something on Ching — a quiet jump to a rival studio, with work that wasn’t hers to take. A real motive. But Ching had a bag packed and a cab booked, already halfway out the door — reaching for an exit, not a weapon.',
     weight: 'WEAK',
     evidenceAgainst: ['ching'],
     source: 'ching',

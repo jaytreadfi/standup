@@ -1,88 +1,93 @@
 /**
  * @fileoverview Clock engine for Tread Office.
  *
- * The in-game day begins at 9:00 AM (minute 0). The workday budget runs
- * through 5:00 PM (minute 480). The clock continues past that, cycling
- * through dusk and night until sunrise at minute 1260 (next-day 6:00 AM) —
- * the first-shift deadline the whole case advertises.
+ * The case opens on a normal workday morning — 09:00 AM (START_MINUTE = 0) —
+ * the morning the team arrives to find Yibo dead on the floor. The clock then
+ * runs in real time across a full 24-hour day, through afternoon and dusk into
+ * night, to the deadline at 09:00 AM the next morning (DEADLINE_MINUTE = 1440),
+ * when David's board call connects and the "accident" story sets for good.
  *
- * All exports are pure functions or plain constants — no side effects,
- * no external imports.
+ * Time keeps ticking on its own; player actions (travel, examine, talk) do NOT
+ * cost minutes. A real-time ticker (state/actions.js → useGameClock) advances
+ * the clock by GAME_MINUTES_PER_REAL_SECOND every CLOCK_TICK_MS while the player
+ * is free-roaming, and pauses inside dialogue, overlays, and menus. The rate is
+ * 1 in-game minute per real second, so the whole day burns in ~24 real minutes
+ * and the scene art walks day → dusk → night as you play.
+ *
+ * All exports are pure functions or plain constants — no side effects.
  */
 
 /**
- * Time costs (in minutes) for each player action.
- *
- * @type {{ TRAVEL: number, EXAMINE: number, DIALOGUE_NODE: number, OVERLAY_OPEN: number, ACCUSATION_OPEN: number }}
- */
-export const TIME_COSTS = {
-  TRAVEL: 20,
-  EXAMINE: 30,
-  DIALOGUE_NODE: 25,
-  OVERLAY_OPEN: 0,
-  ACCUSATION_OPEN: 0,
-};
-
-/**
- * The minute at which sunrise occurs (next-day 6:00 AM) — the advertised
- * first-shift deadline. formatClock(SUNRISE_MINUTE) === '06:00 AM'.
- *
+ * The minute the workday opens (09:00 AM). The clock's arithmetic origin is also
+ * 9:00 AM, so the day starts at minute 0. formatClock(0) === '09:00 AM'.
  * @type {number}
  */
-export const SUNRISE_MINUTE = 1260;
+export const START_MINUTE = 0;
 
 /**
- * The number of minutes in the standard 9 AM – 5 PM workday budget.
- *
+ * The minute the deadline lands — 24 hours after the start, i.e. 09:00 AM the
+ * next day, when David takes the board call. formatClock(1440) === '09:00 AM'.
  * @type {number}
  */
-export const DAY_BUDGET_MINUTES = 480;
+export const DEADLINE_MINUTE = 1440;
 
 /**
- * Advances the clock by the cost of the given action.
- *
- * @param {number} currentMinutes - Current elapsed minutes since 9:00 AM.
- * @param {string} action - A key from TIME_COSTS.
- * @returns {number} Updated elapsed minutes.
- * @throws {Error} If action is not a recognized TIME_COSTS key.
- *
- * @example
- * advance(0, 'TRAVEL')       // 20
- * advance(75, 'OVERLAY_OPEN') // 75
+ * Length of the playable day in in-game minutes (a full 24 hours).
+ * @type {number}
  */
-export function advance(currentMinutes, action) {
-  if (!Object.prototype.hasOwnProperty.call(TIME_COSTS, action)) {
-    throw new Error(
-      `Unknown action "${action}". Must be one of: ${Object.keys(TIME_COSTS).join(', ')}.`
-    );
-  }
-  return currentMinutes + TIME_COSTS[action];
-}
+export const DAY_LENGTH_MINUTES = DEADLINE_MINUTE - START_MINUTE;
+
+/**
+ * Real wall-clock seconds it takes to burn the whole day — a full untouched
+ * playthrough runs ~24 real minutes before the deadline forces the timeout.
+ * @type {number}
+ */
+export const REAL_SECONDS_PER_DAY = 1440;
+
+/**
+ * In-game minutes the clock advances per real second of free-roam. Exactly 1 —
+ * one real second is one in-game minute.
+ * @type {number}
+ */
+export const GAME_MINUTES_PER_REAL_SECOND = DAY_LENGTH_MINUTES / REAL_SECONDS_PER_DAY;
+
+/**
+ * How often the real-time ticker fires, in milliseconds.
+ * @type {number}
+ */
+export const CLOCK_TICK_MS = 1000;
 
 /**
  * Formats elapsed minutes as a 12-hour wall-clock string.
  *
- * The clock starts at 9:00 AM. Minutes are added to that base, then the
- * result is wrapped modulo 24 hours so next-day times display correctly.
- * Hours and minutes are zero-padded to two digits. Midnight is "12:00 AM"
- * and noon is "12:00 PM".
+ * The clock's origin is 09:00 AM (minute 0). Minutes are added to that base,
+ * then wrapped modulo 24 hours so next-day times display correctly. Hours and
+ * minutes are zero-padded to two digits. Midnight is "12:00 AM" and noon is
+ * "12:00 PM".
  *
- * @param {number} minutes - Elapsed minutes since 9:00 AM (day start).
- * @returns {string} Formatted time string, e.g. "09:00 AM", "01:15 PM".
+ * @param {number} minutes - Elapsed minutes since the 09:00 AM start.
+ * @returns {string} Formatted time string, e.g. "09:00 AM", "03:00 PM".
  *
  * @example
- * formatClock(0)    // '09:00 AM'
- * formatClock(75)   // '10:15 AM'
- * formatClock(180)  // '12:00 PM'
- * formatClock(240)  // '01:00 PM'
- * formatClock(900)  // '12:00 AM'
- * formatClock(1260) // '06:00 AM' (sunrise)
+ * formatClock(0)    // '09:00 AM' (START_MINUTE)
+ * formatClock(360)  // '03:00 PM'
+ * formatClock(900)  // '12:00 AM' (midnight)
+ * formatClock(1440) // '09:00 AM' (deadline, next day)
  */
 export function formatClock(minutes) {
   const MINUTES_PER_DAY = 24 * 60;
-  const BASE_MINUTES = 9 * 60; // 9:00 AM
+  const BASE_MINUTES = 9 * 60; // 09:00 AM origin
 
-  const totalMinutes = (BASE_MINUTES + minutes) % MINUTES_PER_DAY;
+  // Corrupt or hand-edited persisted clocks can arrive as NaN/Infinity or a
+  // negative number. Guard so the HUD shows a sentinel instead of "NaN:NaN".
+  if (!Number.isFinite(minutes)) return '--:-- --';
+
+  // Math.floor + true modulo (JS % keeps the dividend's sign) so any negative
+  // elapsed value still wraps into a valid 0–1439 minute-of-day. Floor also
+  // drops any fractional minutes the real-time ticker might accumulate.
+  const m = Math.floor(minutes);
+  const totalMinutes =
+    (((BASE_MINUTES + m) % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
 
   const hour24 = Math.floor(totalMinutes / 60);
   const minute = totalMinutes % 60;
@@ -99,15 +104,12 @@ export function formatClock(minutes) {
 }
 
 /**
- * Returns the time-of-day period for the given elapsed minutes.
+ * Returns the time-of-day period for the given elapsed minutes — the key that
+ * selects each room's scene art. Over the day the player walks through all
+ * three: morning (09:00–14:59), dusk (15:00–18:59), night (19:00 onward).
  *
- * @param {number} minutes - Elapsed minutes since 9:00 AM.
+ * @param {number} minutes - Elapsed minutes since the 09:00 AM start.
  * @returns {'morning' | 'dusk' | 'night'}
- *
- * @example
- * periodFor(0)   // 'morning'
- * periodFor(360) // 'dusk'
- * periodFor(600) // 'night'
  */
 export function periodFor(minutes) {
   if (minutes >= 600) return 'night';
@@ -116,9 +118,9 @@ export function periodFor(minutes) {
 }
 
 /**
- * Human display label for a period. The 'morning' art key actually covers the
- * whole 9 AM–3 PM daytime block, so we surface it as "DAY" to avoid the
- * "02:10 PM · MORNING" mismatch a player would otherwise read in the HUD.
+ * Human display label for a period. The 'morning' art key covers the whole
+ * 09:00–15:00 daytime block, surfaced as "DAY" to avoid a "02:10 PM · MORNING"
+ * HUD mismatch.
  *
  * @param {'morning'|'dusk'|'night'} period
  * @returns {string}
@@ -130,15 +132,11 @@ export function periodLabel(period) {
 }
 
 /**
- * Returns true once the clock has reached or passed sunrise (minute 1260, SUNRISE_MINUTE).
+ * Returns true once the clock has reached or passed the deadline (DEADLINE_MINUTE).
  *
- * @param {number} minutes - Elapsed minutes since 9:00 AM.
+ * @param {number} minutes - Elapsed minutes since the 09:00 AM start.
  * @returns {boolean}
- *
- * @example
- * isPastSunrise(1260) // true
- * isPastSunrise(1259) // false
  */
-export function isPastSunrise(minutes) {
-  return minutes >= SUNRISE_MINUTE;
+export function isPastDeadline(minutes) {
+  return minutes >= DEADLINE_MINUTE;
 }
