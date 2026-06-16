@@ -126,12 +126,69 @@
     transform var(--dur-fast) var(--ease-quart);
 }
 
+/* Room scene art as the block backdrop — the map reads as the rooms themselves. */
+.blockScene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  opacity: 0.85;
+  filter: saturate(0.92) brightness(0.82);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Darken top + bottom (behind the label and the dots) while leaving the middle
+ * of the scene legible. */
+.blockScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0.8) 0%,
+    rgba(10, 10, 10, 0.18) 34%,
+    rgba(10, 10, 10, 0.22) 58%,
+    rgba(10, 10, 10, 0.88) 100%
+  );
+}
+
+/* Lift the labels / markers above the scene + scrim. */
+.blockHead,
+.blockLabel,
+.here,
+.cost,
+.dots {
+  position: relative;
+  z-index: 2;
+}
+
 .block:hover,
 .block:focus-visible {
   background: rgba(245, 124, 58, 0.1);
   box-shadow: inset 0 0 0 1px var(--color-accent), 0 0 18px rgba(245, 124, 58, 0.12);
   outline: none;
   z-index: 3;
+}
+
+.block:hover .blockScene,
+.block:focus-visible .blockScene {
+  opacity: 1;
+  filter: saturate(1) brightness(0.96);
+}
+
+/* Current room keeps a warm wash over its scene so it still reads as "here". */
+.block[data-here] .blockScrim {
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0.8) 0%,
+    rgba(245, 124, 58, 0.14) 45%,
+    rgba(10, 10, 10, 0.88) 100%
+  );
 }
 
 /* Current room — filled accent tint + pulsing frame. */

@@ -101,108 +101,81 @@
   pointer-events: none;
 }
 
-/* Invisible 36px hit target centered on the scene point; visuals are the
- * inner .reticle layer. */
+/* 30px hit target centered on the scene point; the visible affordance is the
+ * inner .hintBox. */
 .hotspot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   margin: 0;
   background: transparent;
   border: 0;
   cursor: pointer;
   pointer-events: auto;
-  display: block;
+  display: grid;
+  place-items: center;
 }
 
 .hotspot:focus-visible { outline: none; }
 
-/* Reticle — four L-corners around a central gap, idle at 0.55 opacity with a
- * slow breathing pulse; hover/focus brightens to full. */
-.reticle {
-  position: absolute;
-  inset: 0;
-  display: block;
-  pointer-events: none;
-  opacity: 0.85;
-  transition: opacity var(--dur-fast) var(--ease-quart);
-  animation: reticleBreath 2200ms var(--ease-soft) infinite;
-}
-
-/* Un-examined hotspots glow + pulse a touch harder so the scene reads as
- * interactive (testers found bare reticles hard to spot against the art). */
-.hotspot:not([data-logged]) .reticle {
-  filter: drop-shadow(0 0 4px rgba(245, 124, 58, 0.55));
-}
-
-.hotspot:hover .reticle,
-.hotspot:focus-visible .reticle {
-  opacity: 1;
-  animation: none;
-  filter: drop-shadow(0 0 6px rgba(245, 124, 58, 0.8));
-}
-
-@keyframes reticleBreath {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.08); }
-}
-
-.cornerTL,
-.cornerTR,
-.cornerBL,
-.cornerBR {
-  position: absolute;
-  width: 11px;
-  height: 11px;
-  transition: border-color var(--dur-fast) var(--ease-quart);
-}
-
-.cornerTL { top: 0; left: 0; border-top: 1px solid var(--color-accent); border-left: 1px solid var(--color-accent); }
-.cornerTR { top: 0; right: 0; border-top: 1px solid var(--color-accent); border-right: 1px solid var(--color-accent); }
-.cornerBL { bottom: 0; left: 0; border-bottom: 1px solid var(--color-accent); border-left: 1px solid var(--color-accent); }
-.cornerBR { bottom: 0; right: 0; border-bottom: 1px solid var(--color-accent); border-right: 1px solid var(--color-accent); }
-
-/* Center dot — solid accent pip. */
-.reticleDot {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 3px;
-  height: 3px;
-  transform: translate(-50%, -50%);
-  background: var(--color-accent);
-}
-
-/* Check glyph — hidden by default; shown only on logged targets. */
-.reticleCheck {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+/* Hint box — a solid black square holding a "?" (or "✓" once logged). Reads
+ * clearly against busy scene art where the old corner-bracket reticle didn't.
+ * A gentle glow-pulse draws the eye to un-examined points. */
+.hintBox {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1;
   color: var(--color-accent);
-  opacity: 0;
+  background: rgba(8, 8, 8, 0.92);
+  border: 1px solid var(--color-accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  transition:
+    background var(--dur-fast) var(--ease-quart),
+    color var(--dur-fast) var(--ease-quart),
+    transform var(--dur-fast) var(--ease-quart),
+    box-shadow var(--dur-fast) var(--ease-quart);
+  animation: hintPulse 2200ms var(--ease-soft) infinite;
 }
 
-/* Logged targets read as "done": dimmed reticle, no breathing, check shown,
- * dot hidden. Hover still brightens for re-examination affordance. */
-.hotspot[data-logged] .reticle {
-  opacity: 0.32;
-  animation: none;
+@keyframes hintPulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 0 0 rgba(245, 124, 58, 0); }
+  50%      { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 11px 1px rgba(245, 124, 58, 0.55); }
 }
-.hotspot[data-logged]:hover .reticle,
-.hotspot[data-logged]:focus-visible .reticle { opacity: 0.7; }
-.hotspot[data-logged] .cornerTL,
-.hotspot[data-logged] .cornerTR,
-.hotspot[data-logged] .cornerBL,
-.hotspot[data-logged] .cornerBR { border-color: var(--color-text-muted); }
-.hotspot[data-logged] .reticleDot { opacity: 0; }
-.hotspot[data-logged] .reticleCheck { opacity: 1; }
+
+.hotspot:hover .hintBox,
+.hotspot:focus-visible .hintBox {
+  background: var(--color-accent);
+  color: #0a0a0a;
+  transform: scale(1.12);
+  animation: none;
+  box-shadow: 0 0 14px 2px rgba(245, 124, 58, 0.7);
+}
+
+/* Logged targets read as done: muted check, no pulse. Hover still re-arms the
+ * accent for re-examination. */
+.hotspot[data-logged] .hintBox {
+  color: var(--color-text-muted);
+  border-color: var(--color-text-muted);
+  animation: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+}
+.hotspot[data-logged]:hover .hintBox,
+.hotspot[data-logged]:focus-visible .hintBox {
+  background: rgba(8, 8, 8, 0.92);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hintBox { animation: none; }
+}
 
 /* Framed callout label — only on hover/focus. */
 .hotspotLabel {

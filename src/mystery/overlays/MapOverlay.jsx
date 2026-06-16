@@ -22,9 +22,10 @@ import {
   collectedCluesAtom,
 } from '@/mystery/state/mystery';
 import { rooms } from '@/mystery/data/rooms';
+import { sceneUrl } from '@/mystery/data/scenes';
 import { characters } from '@/mystery/data/characters';
 import { roomByCharacter } from '@/mystery/engine/schedule';
-import { formatClock, periodFor, periodLabel, TIME_COSTS } from '@/mystery/engine/clock';
+import { formatClock, periodFor, periodLabel } from '@/mystery/engine/clock';
 
 import styles from './MapOverlay.module.css';
 
@@ -113,6 +114,10 @@ export default function MapOverlay() {
                   const found = clueTargets.filter((t) => collectedIds.has(t.clueId)).length;
                   const hasUnfound = found < total;
 
+                  // The room's scene art for the current period, shown as the
+                  // block's backdrop so the map reads as the rooms themselves.
+                  const sceneSrc = sceneUrl(room.sceneAssetByPeriod?.[period]);
+
                   return (
                     <button
                       key={room.id}
@@ -132,10 +137,21 @@ export default function MapOverlay() {
                         (total === 0
                           ? 'No evidence here.'
                           : `${found} of ${total} clue${total === 1 ? '' : 's'} found.`) +
-                        (isHere ? ' You are here.' : ` Travel costs ${TIME_COSTS.TRAVEL} minutes.`)
+                        (isHere ? ' You are here.' : ' Move here.')
                       }
                       aria-current={isHere ? 'location' : undefined}
                     >
+                      {sceneSrc && (
+                        <img
+                          src={sceneSrc}
+                          alt=""
+                          aria-hidden="true"
+                          className={styles.blockScene}
+                          draggable="false"
+                        />
+                      )}
+                      <span className={styles.blockScrim} aria-hidden="true" />
+
                       <span className={styles.blockHead}>
                         <span className={styles.blockShort}>{room.short}</span>
                         {total > 0 && (
@@ -159,7 +175,7 @@ export default function MapOverlay() {
                       )}
 
                       {!isHere && (
-                        <span className={styles.cost} aria-hidden="true">+{TIME_COSTS.TRAVEL} MIN</span>
+                        <span className={styles.cost} aria-hidden="true">▸ MOVE</span>
                       )}
 
                       <span className={styles.dots} aria-hidden="true">

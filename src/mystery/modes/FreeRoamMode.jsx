@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAtomValue } from 'jotai';
 
@@ -11,7 +12,7 @@ import {
   charactersInRoomAtom,
 } from '@/mystery/state/mystery';
 import { periodFor, formatClock, periodLabel } from '@/mystery/engine/clock';
-import { roomById } from '@/mystery/data/rooms';
+import { roomById, rooms } from '@/mystery/data/rooms';
 import { sceneUrl, portraitUrl } from '@/mystery/data/scenes';
 import styles from './FreeRoamMode.module.css';
 
@@ -42,6 +43,28 @@ export default function FreeRoamMode() {
   const collectedClueIds = new Set(collectedClues.map((c) => c.id));
   const examineTargets = room?.examineTargets ?? [];
 
+  // Warm the cache for every room's art at the current period so travelling
+  // (every room is adjacent) shows the scene instantly instead of popping in
+  // after a multi-hundred-KB fetch. Re-runs when the period flips day/dusk/night.
+  useEffect(() => {
+    const imgs = rooms
+      .map((r) => r.sceneAssetByPeriod?.[period])
+      .filter(Boolean)
+      .map((key) => sceneUrl(key))
+      .filter(Boolean)
+      .map((src) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = src;
+        return img;
+      });
+    return () => {
+      imgs.forEach((img) => {
+        img.src = '';
+      });
+    };
+  }, [period]);
+
   return (
     <div className={styles.root} data-period={period}>
       {/* ---- Full-bleed scene art (or NO FEED placeholder) ---- */}
@@ -52,6 +75,7 @@ export default function FreeRoamMode() {
           alt={`${label} — ${period}`}
           className={styles.scene}
           draggable="false"
+          decoding="async"
           initial={{ opacity: 0, scale: 1.015 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.35, ease: EASE_QUART }}
@@ -86,13 +110,8 @@ export default function FreeRoamMode() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.28, delay: 0.12 + i * 0.07, ease: EASE_QUART }}
             >
-              <span className={styles.reticle} aria-hidden="true">
-                <span className={styles.cornerTL} />
-                <span className={styles.cornerTR} />
-                <span className={styles.cornerBL} />
-                <span className={styles.cornerBR} />
-                <span className={styles.reticleDot} />
-                <span className={styles.reticleCheck}>✓</span>
+              <span className={styles.hintBox} aria-hidden="true">
+                {logged ? '✓' : '?'}
               </span>
               <span className={styles.hotspotLabel}>
                 {logged ? 'LOGGED · ' : ''}
