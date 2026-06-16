@@ -1,0 +1,125 @@
+/* EndingMode — the verdict card.
+ * Tone-driven: --tone is set inline from the ending's tone (success/warn/danger)
+ * and colors the stamp, rule, and verdict. Brutalist: zero radius, 1px frames. */
+
+.root {
+  position: absolute;
+  inset: 0;
+}
+
+/* Tone-tinted vignette so the verdict reads as a colored spotlight. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(110% 80% at 50% 38%, color-mix(in srgb, var(--tone) 8%, transparent), transparent 60%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0) 45%, rgba(10, 10, 10, 0.65) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: var(--space-12) var(--space-10);
+  text-align: center;
+}
+
+/* ---------- Case stamp ---------- */
+.stamp {
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--tone);
+}
+
+/* ---------- Title ---------- */
+.title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-display);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.05em;
+  line-height: var(--line-tight);
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+/* ---------- Verdict ---------- */
+.verdictWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.rule {
+  height: 2px;
+  background: var(--tone);
+}
+
+.verdict {
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--tone);
+}
+
+/* ---------- Body ---------- */
+.body {
+  margin: 0;
+  max-width: 620px;
+  font-family: var(--font-mono);
+  font-size: var(--font-base);
+  line-height: var(--line-base);
+  letter-spacing: var(--track);
+  color: var(--color-text-dim);
+}
+
+/* ---------- Restart ---------- */
+.restartBtn {
+  margin-top: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--font-md);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: var(--space-4) var(--space-10);
+  color: var(--color-accent);
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-quart),
+    color var(--dur-fast) var(--ease-quart),
+    box-shadow var(--dur-fast) var(--ease-quart);
+}
+
+.restartBtn:hover,
+.restartBtn:focus-visible {
+  background: var(--color-accent);
+  color: var(--color-canvas);
+  box-shadow: 0 0 0 1px var(--color-accent), 0 0 24px rgba(245, 124, 58, 0.25);
+  outline: none;
+}
+
+.restartBtn:active {
+  transform: translateY(1px);
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .rule {
+    width: 220px !important;
+  }
+}

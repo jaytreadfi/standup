@@ -1,0 +1,358 @@
+/* MapOverlay.module.css — schematic floor-plan navigation overlay.
+ * Brutalist trading terminal: IBM Plex Mono, near-black, single orange accent,
+ * zero border-radius, 1px sharp borders. CSS variables from src/index.css. */
+
+/* ---------- Full-screen scrim ---------- */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: grid;
+  place-items: center;
+  padding: var(--space-8);
+  background: rgba(10, 10, 10, 0.92);
+  /* Enter/exit animation is driven by framer-motion (AnimatePresence) now. */
+}
+
+/* ---------- Framed schematic panel ---------- */
+.panel {
+  position: relative;
+  width: min(880px, 100%);
+  height: min(680px, 100%);
+  max-height: 100%;
+}
+
+.inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-6) var(--space-6);
+  background: var(--color-canvas);
+  overflow: hidden;
+}
+
+/* Period atmospheres — subtle radial wash behind the schematic. */
+.inner[data-period="dusk"] {
+  background:
+    radial-gradient(circle at 82% 14%, rgba(245, 124, 58, 0.05) 0%, transparent 52%),
+    var(--color-canvas);
+}
+.inner[data-period="night"] {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(120, 160, 220, 0.04) 0%, transparent 55%),
+    var(--color-canvas);
+}
+
+/* ---------- Header ---------- */
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-2);
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.kickerGlyph {
+  color: var(--color-accent);
+}
+
+.clock {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+/* ---------- Schematic stage (fixed 4:3) ---------- */
+.stageWrap {
+  flex: 1 1 auto;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  container-type: size;
+}
+
+.stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  width: min(100cqw, calc(100cqh * 4 / 3));
+  height: min(100cqh, calc(100cqw * 3 / 4));
+  border: 1px solid var(--color-border);
+  background:
+    repeating-linear-gradient(90deg, transparent 0, transparent 23px, rgba(245, 124, 58, 0.025) 23px, rgba(245, 124, 58, 0.025) 24px),
+    repeating-linear-gradient(0deg, transparent 0, transparent 23px, rgba(245, 124, 58, 0.025) 23px, rgba(245, 124, 58, 0.025) 24px);
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- Room block ---------- */
+.block {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  background: rgba(15, 15, 15, 0.55);
+  border: 1px solid var(--color-accent);
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    background var(--dur-fast) var(--ease-quart),
+    box-shadow var(--dur-fast) var(--ease-quart),
+    transform var(--dur-fast) var(--ease-quart);
+}
+
+.block:hover,
+.block:focus-visible {
+  background: rgba(245, 124, 58, 0.1);
+  box-shadow: inset 0 0 0 1px var(--color-accent), 0 0 18px rgba(245, 124, 58, 0.12);
+  outline: none;
+  z-index: 3;
+}
+
+/* Current room — filled accent tint + pulsing frame. */
+.block[data-here] {
+  background: rgba(245, 124, 58, 0.16);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+  cursor: default;
+  animation: herePulse 2200ms var(--ease-soft) infinite;
+  z-index: 2;
+}
+
+.block[data-here]:hover,
+.block[data-here]:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+  transform: none;
+}
+
+@keyframes herePulse {
+  0%   { box-shadow: inset 0 0 0 1px var(--color-accent), 0 0 0 0 rgba(245, 124, 58, 0.0); }
+  50%  { box-shadow: inset 0 0 0 1px var(--color-accent), 0 0 16px 0 rgba(245, 124, 58, 0.18); }
+  100% { box-shadow: inset 0 0 0 1px var(--color-accent), 0 0 0 0 rgba(245, 124, 58, 0.0); }
+}
+
+.blockHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: var(--space-2);
+}
+
+.blockShort {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.18em;
+  color: var(--color-accent);
+}
+
+.blockLabel {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.1em;
+  line-height: var(--line-tight);
+  text-transform: uppercase;
+  color: var(--color-text);
+  max-width: 100%;
+}
+
+/* Evidence indicator — subtle ◦ (unfound) / ● (cleared). */
+.evidence {
+  font-size: var(--font-xs);
+  line-height: 1;
+  color: var(--color-text-muted);
+}
+.evidence[data-unfound] {
+  color: var(--color-accent);
+}
+
+/* YOU ARE HERE tag. */
+.here {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: auto;
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.hereDot {
+  width: 4px;
+  height: 4px;
+  background: var(--color-accent);
+}
+
+/* Travel cost hint — hidden until hover/focus on non-current blocks. */
+.cost {
+  margin-top: auto;
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  opacity: 0;
+  transform: translateY(2px);
+  transition:
+    opacity var(--dur-fast) var(--ease-quart),
+    transform var(--dur-fast) var(--ease-quart);
+}
+
+.block:hover .cost,
+.block:focus-visible .cost {
+  opacity: 1;
+  transform: none;
+}
+
+/* NPC presence dots row. */
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+  min-height: 5px;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  background: var(--color-text-dim);
+}
+
+.block[data-here] .dot {
+  background: var(--color-accent);
+}
+
+.empty {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  line-height: 1;
+}
+
+.dotCount {
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.14em;
+  color: var(--color-text-dim);
+}
+
+/* ---------- Footer: legend + close ---------- */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-divider);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.legendSwatchHere {
+  width: 9px;
+  height: 9px;
+  background: rgba(245, 124, 58, 0.16);
+  border: 1px solid var(--color-accent);
+}
+
+.legendGlyphUnfound {
+  color: var(--color-accent);
+  font-size: var(--font-xs);
+  line-height: 1;
+}
+
+.legendGlyphFound {
+  color: var(--color-text-muted);
+  font-size: var(--font-xs);
+  line-height: 1;
+}
+
+/* ---------- Close affordance ---------- */
+.close {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-quart),
+    border-color var(--dur-fast) var(--ease-quart),
+    background var(--dur-fast) var(--ease-quart);
+}
+
+.close:hover,
+.close:focus-visible {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: rgba(245, 124, 58, 0.06);
+  outline: none;
+}
+
+.closeKey {
+  color: var(--color-accent);
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .scrim,
+  .panel { animation: none; }
+  .block[data-here] { animation: none; }
+  .cost {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}

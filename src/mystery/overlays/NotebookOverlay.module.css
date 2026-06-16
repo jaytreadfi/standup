@@ -1,0 +1,255 @@
+/* NotebookOverlay — the case file / evidence ledger.
+ * Full-screen scrim over the shell; a centered framed panel holds the objective
+ * and the logged evidence. Brutalist: zero radius, 1px frames, mono uppercase.
+ */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-8);
+  background: rgba(5, 5, 5, 0.82);
+  backdrop-filter: blur(2px);
+}
+
+.panel {
+  position: relative;
+  width: min(720px, 100%);
+  max-height: 100%;
+  background: var(--color-canvas);
+  border: 1px solid var(--color-border-strong);
+  display: flex;
+  min-height: 0;
+}
+
+.panel > * {
+  width: 100%;
+  min-height: 0;
+}
+
+.body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-8) var(--space-6) var(--space-6);
+  max-height: min(78vh, 640px);
+  overflow: auto;
+  font-family: var(--font-mono);
+  letter-spacing: var(--track);
+}
+
+/* ---------- Close ---------- */
+.close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-quart),
+    border-color var(--dur-fast) var(--ease-quart),
+    background-color var(--dur-fast) var(--ease-quart);
+}
+
+.close:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: rgba(245, 124, 58, 0.06);
+}
+
+/* ---------- Objective ---------- */
+.objective {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-divider, var(--color-border));
+}
+
+.objectiveLabel {
+  color: var(--color-accent);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.objectiveText {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-sm);
+  line-height: var(--line-base);
+}
+
+/* ---------- Ledger header ---------- */
+.ledgerHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.ledgerTitle {
+  color: var(--color-text-dim);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ledgerCount {
+  color: var(--color-accent);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Empty state ---------- */
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-12) 0;
+  align-items: center;
+  text-align: center;
+}
+
+.emptyPrompt {
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.emptyRule {
+  color: var(--color-border-strong);
+  letter-spacing: 0.4em;
+  font-size: var(--font-xs);
+  user-select: none;
+}
+
+.emptySub {
+  color: var(--color-text-muted);
+  font-size: var(--font-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---------- Evidence list ---------- */
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-divider, var(--color-border));
+}
+
+.entry:first-child {
+  border-top: 1px solid var(--color-divider, var(--color-border));
+}
+
+.entryHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.entryId {
+  color: var(--color-accent);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+}
+
+.entryLabel {
+  color: var(--color-text);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ---------- Weight tag (color by weight) ---------- */
+.weightTag {
+  flex: 0 0 auto;
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 2px var(--space-2);
+  border: 1px solid currentColor;
+  color: var(--color-text-muted);
+}
+
+.weightTag[data-weight='weak'] {
+  color: var(--color-text-dim);
+}
+
+.weightTag[data-weight='core'] {
+  color: var(--color-warn);
+}
+
+.weightTag[data-weight='heavy'] {
+  color: var(--color-danger);
+}
+
+.entryDesc {
+  margin: 0;
+  color: var(--color-text-dim);
+  font-size: var(--font-xs);
+  line-height: var(--line-base);
+}
+
+.entryMeta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.metaSource {
+  color: var(--color-text-dim);
+}
+
+.metaSep {
+  color: var(--color-border-strong);
+}
+
+.metaTime {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim {
+    backdrop-filter: none;
+  }
+}

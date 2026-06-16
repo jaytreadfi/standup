@@ -1,0 +1,403 @@
+/* AccusationMode — the "name them" screen.
+ * Suspect board (pick one) over an evidence picker (pick three), then the
+ * one-shot confirm. Brutalist: zero radius, sharp 1px frames, single accent. */
+
+.root {
+  position: absolute;
+  inset: 0;
+}
+
+/* The chrome content area is fixed-height; this scroller owns the overflow so
+ * the board + evidence + actions never clip on short viewports. */
+.scroll {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  padding: var(--space-8) var(--space-8) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+
+/* ---------- Header ---------- */
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--color-border-strong);
+  padding-bottom: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-xl);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.warn {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-danger);
+}
+
+.warnGlyph {
+  color: var(--color-danger);
+}
+
+/* ---------- Section scaffolding ---------- */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.sectionGlyph {
+  color: var(--color-accent);
+}
+
+.sectionHint {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+}
+
+.sectionHint[data-full] {
+  color: var(--color-accent);
+}
+
+/* ---------- Suspect board ---------- */
+.suspectGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-3);
+}
+
+.suspectCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color var(--dur-fast) var(--ease-quart),
+    background-color var(--dur-fast) var(--ease-quart),
+    box-shadow var(--dur-fast) var(--ease-quart);
+}
+
+.suspectCard:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-2);
+}
+
+.suspectCard[data-chosen] {
+  border-color: var(--color-accent);
+  background: rgba(245, 124, 58, 0.06);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.slot {
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.suspBadge {
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.suspBadge[data-tier='warn'] {
+  color: var(--color-warn);
+}
+
+.suspBadge[data-tier='danger'] {
+  color: var(--color-danger);
+}
+
+.portraitWrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-strong);
+  overflow: hidden;
+  transition: box-shadow var(--dur-fast) var(--ease-quart);
+}
+
+.suspectCard:hover .portraitWrap {
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+.suspectCard[data-chosen] .portraitWrap {
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+/* "ACCUSED" stamp — hidden until the card is chosen. */
+.chosenMark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2px 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-canvas);
+  background: var(--color-accent);
+  opacity: 0;
+  transform: translateY(100%);
+  transition:
+    opacity var(--dur-fast) var(--ease-quart),
+    transform var(--dur-fast) var(--ease-quart);
+}
+
+.suspectCard[data-chosen] .chosenMark {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+}
+
+.name {
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.06em;
+  color: var(--color-text-dim);
+}
+
+.suspectCard[data-chosen] .name {
+  color: var(--color-text);
+}
+
+.role {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Evidence picker ---------- */
+.note {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-warn);
+  border-left: 2px solid var(--color-warn);
+}
+
+.empty {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.clueGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-2);
+}
+
+.clueChip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color var(--dur-fast) var(--ease-quart),
+    background-color var(--dur-fast) var(--ease-quart);
+}
+
+.clueChip:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-2);
+}
+
+.clueChip[data-picked] {
+  border-color: var(--color-accent);
+  background: rgba(245, 124, 58, 0.06);
+}
+
+.clueChip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.clueMark {
+  font-family: var(--font-mono);
+  font-size: var(--font-base);
+  line-height: 1;
+  color: var(--color-text-muted);
+  flex: none;
+}
+
+.clueChip[data-picked] .clueMark {
+  color: var(--color-accent);
+}
+
+.clueBody {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.clueLabel {
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clueChip[data-picked] .clueLabel {
+  color: var(--color-text);
+}
+
+.clueWeight {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  flex: none;
+}
+
+.clueWeight[data-weight='CORE'] {
+  color: var(--color-warn);
+  border-color: var(--color-warn);
+}
+
+.clueWeight[data-weight='HEAVY'] {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+/* ---------- Actions ---------- */
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  margin-top: auto;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border-strong);
+}
+
+.cancelBtn,
+.confirmBtn {
+  font-family: var(--font-mono);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: var(--space-3) var(--space-6);
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-quart),
+    color var(--dur-fast) var(--ease-quart),
+    border-color var(--dur-fast) var(--ease-quart),
+    box-shadow var(--dur-fast) var(--ease-quart);
+}
+
+.cancelBtn {
+  color: var(--color-text-dim);
+}
+
+.cancelBtn:hover,
+.cancelBtn:focus-visible {
+  color: var(--color-text);
+  border-color: var(--color-text-dim);
+  outline: none;
+}
+
+.confirmBtn {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.confirmBtn:not(:disabled):hover,
+.confirmBtn:not(:disabled):focus-visible {
+  background: var(--color-accent);
+  color: var(--color-canvas);
+  box-shadow: 0 0 24px rgba(245, 124, 58, 0.25);
+  outline: none;
+}
+
+.confirmBtn:disabled {
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+}

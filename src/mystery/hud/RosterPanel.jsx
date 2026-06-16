@@ -1,25 +1,17 @@
+import { useAtomValue } from 'jotai';
 import TerminalChrome from '@/components/chrome/TerminalChrome';
 import SpriteFrame from '@/components/chrome/SpriteFrame';
-import davidPortrait from '@/assets/portraits/david.png';
-import samPortrait from '@/assets/portraits/sam.png';
-import jayPortrait from '@/assets/portraits/jay.png';
-import peemPortrait from '@/assets/portraits/peem.png';
-import denaPortrait from '@/assets/portraits/dena.png';
-import ponchoPortrait from '@/assets/portraits/poncho.png';
-import chingPortrait from '@/assets/portraits/ching.png';
-import jamiePortrait from '@/assets/portraits/jamie.png';
+import {
+  clockMinutesAtom,
+  charactersInRoomAtom,
+  suspicionByCharacterAtom,
+} from '@/mystery/state/mystery';
+import { characters } from '@/mystery/data/characters';
+import { roomById } from '@/mystery/data/rooms';
+import { roomByCharacter } from '@/mystery/engine/schedule';
+import { badgeFor } from '@/mystery/engine/suspicion';
+import { portraitUrl } from '@/mystery/data/scenes';
 import styles from './RosterPanel.module.css';
-
-const ROSTER_STUB = [
-  { id: 'david',  slot: 'D1', name: 'David',  status: 'OFFICE',           badge: '00', portrait: davidPortrait,  active: false },
-  { id: 'sam',    slot: 'D2', name: 'Sam',    status: 'PANTRY',           badge: '02', portrait: samPortrait,    active: false },
-  { id: 'jay',    slot: 'D3', name: 'Jay',    status: 'COWORKING',        badge: '04', portrait: jayPortrait,    active: true  },
-  { id: 'peem',   slot: 'D4', name: 'Peem',   status: 'PRINTER',          badge: '06', portrait: peemPortrait,   active: false },
-  { id: 'dena',   slot: 'D5', name: 'Dena',   status: 'PANTRY',           badge: '01', portrait: denaPortrait,   active: false },
-  { id: 'poncho', slot: 'D6', name: 'Poncho', status: 'COWORKING',        badge: '03', portrait: ponchoPortrait, active: false },
-  { id: 'ching',  slot: 'D7', name: 'Ching',  status: 'SOFA · IDLE',      badge: '05', portrait: chingPortrait,  active: false },
-  { id: 'jamie',  slot: 'D8', name: 'Jamie',  status: 'ELEVATOR · 02:04', badge: '08', portrait: jamiePortrait,  active: false },
-];
 
 /**
  * Suspicion tier from a 2-digit badge string.
@@ -60,6 +52,14 @@ function StatusLine({ value }) {
 }
 
 export default function RosterPanel() {
+  const clockMinutes = useAtomValue(clockMinutesAtom);
+  const suspicion = useAtomValue(suspicionByCharacterAtom);
+  // charactersInRoom is read live so the "active" stripe stays reactive to the clock.
+  const charactersHere = useAtomValue(charactersInRoomAtom);
+
+  const roomMap = roomByCharacter(characters, clockMinutes);
+  const hereIds = new Set(charactersHere.map((c) => c.id));
+
   return (
     <div className={styles.root}>
       <TerminalChrome
@@ -70,36 +70,44 @@ export default function RosterPanel() {
         labelPosition="tl"
       >
         <ul className={styles.list}>
-          {ROSTER_STUB.map((row) => (
-            <li
-              key={row.id}
-              className={styles.row}
-              data-active={row.active ? 'true' : 'false'}
-            >
-              <span className={styles.slot}>{row.slot}</span>
-              <span className={styles.portraitWrap}>
-                <SpriteFrame
-                  src={row.portrait}
-                  cols={3}
-                  rows={3}
-                  col={0}
-                  row={0}
-                  size={32}
-                  title={row.name}
-                />
-              </span>
-              <span className={styles.identity}>
-                <span className={styles.name}>{row.name.toUpperCase()}</span>
-                <StatusLine value={row.status} />
-              </span>
-              <span
-                className={styles.badge}
-                data-tier={suspicionTier(row.badge)}
+          {characters.map((c) => {
+            const room = roomMap[c.id];
+            const status = (roomById[room]?.label ?? '—').toUpperCase();
+            const raw = suspicion[c.id]?.raw ?? 0;
+            const badge = badgeFor(raw);
+            const active = hereIds.has(c.id);
+
+            return (
+              <li
+                key={c.id}
+                className={styles.row}
+                data-active={active ? 'true' : 'false'}
               >
-                {row.badge}
-              </span>
-            </li>
-          ))}
+                <span className={styles.slot}>{c.slot}</span>
+                <span className={styles.portraitWrap}>
+                  <SpriteFrame
+                    src={portraitUrl(c.id)}
+                    cols={3}
+                    rows={3}
+                    col={0}
+                    row={0}
+                    size={32}
+                    title={c.name}
+                  />
+                </span>
+                <span className={styles.identity}>
+                  <span className={styles.name}>{c.name.toUpperCase()}</span>
+                  <StatusLine value={status} />
+                </span>
+                <span
+                  className={styles.badge}
+                  data-tier={suspicionTier(badge)}
+                >
+                  {badge}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </TerminalChrome>
     </div>

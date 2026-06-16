@@ -62,15 +62,18 @@
   overflow: hidden;
 }
 
-.overlayStub {
+/* Cinematic full-screen modes (boot / cold-open / accusation / ending) bypass
+   the HUD grid entirely and fill the viewport. */
+.fullscreenShell {
   position: fixed;
   inset: 0;
-  display: grid;
-  place-items: center;
-  background: rgba(10, 10, 10, 0.94);
-  color: var(--color-accent);
-  font-family: var(--font-mono);
-  font-size: var(--font-lg);
-  z-index: var(--z-overlay, 30);
-  pointer-events: none;
+  background: var(--color-canvas);
+  color: var(--color-text);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.fullscreenFrame {
+  position: absolute;
+  inset: 0;
 }

@@ -1,6 +1,7 @@
 import { useAtomValue } from 'jotai';
 import TerminalChrome from '@/components/chrome/TerminalChrome';
 import { collectedCluesAtom } from '@/mystery/state/mystery';
+import { clueById } from '@/mystery/data/clues';
 import { formatClock } from '@/mystery/engine/clock';
 import styles from './RecentEvidencePanel.module.css';
 
@@ -37,9 +38,13 @@ export default function RecentEvidencePanel() {
           {recent.length > 0 && (
             <div className={styles.list}>
               {recent.map((clue, idx) => {
-                const idLabel = `EV-${String(idx + 1).padStart(2, '0')}`;
+                // Stable EV number = the clue's global position in collection
+                // order (newest first in this reversed slice), so it matches the
+                // Case File's numbering instead of being a positional 1..5.
+                const idLabel = `EV-${String(clues.length - idx).padStart(2, '0')}`;
                 const cluLabel =
-                  typeof clue.id === 'string' ? clue.id.toUpperCase() : '';
+                  clueById[clue.id]?.label ??
+                  (typeof clue.id === 'string' ? clue.id.toUpperCase() : '');
                 const time =
                   typeof clue.atMinute === 'number'
                     ? formatClock(clue.atMinute)

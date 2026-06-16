@@ -18,6 +18,7 @@ export default function ScrambleText({ target, duration = 480, autoStart = true,
     return target.split('').map(c => (c === ' ' ? ' ' : REST_GLYPH)).join('');
   });
   const rafRef = useRef(null);
+  const fallbackRef = useRef(null);
   const startedRef = useRef(false);
 
   useEffect(() => {
@@ -29,6 +30,11 @@ export default function ScrambleText({ target, duration = 480, autoStart = true,
       setOutput(target);
       return;
     }
+
+    // Safety net: requestAnimationFrame is throttled/suspended in background or
+    // headless tabs, which can freeze the scramble on placeholder glyphs. This
+    // timer guarantees the final text always lands even if rAF never ticks.
+    fallbackRef.current = setTimeout(() => setOutput(target), duration + 120);
 
     const start = performance.now();
     const lockTimes = target.split('').map((_, i) => (i / Math.max(target.length, 1)) * duration);
@@ -53,7 +59,10 @@ export default function ScrambleText({ target, duration = 480, autoStart = true,
       }
     };
     rafRef.current = requestAnimationFrame(loop);
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (fallbackRef.current) clearTimeout(fallbackRef.current);
+    };
   }, [target, duration, autoStart]);
 
   return <span className={cn(styles.root, className)} aria-label={target}>{output}</span>;

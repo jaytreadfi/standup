@@ -1,21 +1,48 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useAtomValue } from 'jotai';
 import * as log from '@/lib/log';
 import * as telemetry from '@/mystery/engine/telemetry';
+import { useGameActions } from '@/mystery/state/actions';
+import { modeAtom, overlayAtom, mapOpenAtom, collectedCluesAtom } from '@/mystery/state/mystery';
 import styles from './FunctionKeyBar.module.css';
 
-const KEYS = [
-  { key: 'F1', label: 'Probe', enabled: true },
-  { key: 'F2', label: 'Evidence', enabled: true },
-  { key: 'F3', label: 'Notes', enabled: true },
-  { key: 'F4', label: 'Suspects', enabled: true },
-  { key: 'F5', label: 'Save', enabled: true },
-];
-
 const FLASH_MS = 140;
+const MIN_CLUES_TO_ACCUSE = 3;
 
 export default function FunctionKeyBar() {
+  const actions = useGameActions();
+  const mode = useAtomValue(modeAtom);
+  const overlay = useAtomValue(overlayAtom);
+  const mapOpen = useAtomValue(mapOpenAtom);
+  const collectedClues = useAtomValue(collectedCluesAtom);
+
   const [flashing, setFlashing] = useState(null);
+  const [savePulse, setSavePulse] = useState(false);
   const flashTimerRef = useRef(null);
+  const savePulseTimerRef = useRef(null);
+
+  // Only the exploration surface accepts these actions.
+  const inField = mode === 'FREE_ROAM';
+  // ACCUSE is unavailable until you have enough evidence to file a 3-clue case —
+  // mirrors the beginAccusation() guard so the key visibly reads as locked.
+  const canAccuse = inField && collectedClues.length >= MIN_CLUES_TO_ACCUSE;
+
+  const KEYS = [
+    { key: 'F1', label: 'Map', enabled: inField, active: mapOpen,
+      run: () => (mapOpen ? actions.closeMap() : actions.openMap()) },
+    { key: 'F2', label: 'Evidence', enabled: inField, active: overlay === 'NOTEBOOK',
+      run: () => (overlay === 'NOTEBOOK' ? actions.closeOverlay() : actions.openOverlay('NOTEBOOK')) },
+    { key: 'F3', label: 'Suspects', enabled: inField, active: overlay === 'SUSPECTS',
+      run: () => (overlay === 'SUSPECTS' ? actions.closeOverlay() : actions.openOverlay('SUSPECTS')) },
+    { key: 'F4', label: 'Accuse', enabled: canAccuse, active: false,
+      run: () => actions.beginAccusation() },
+    { key: 'F5', label: 'Save', enabled: true, active: savePulse,
+      run: () => {
+        if (savePulseTimerRef.current) clearTimeout(savePulseTimerRef.current);
+        setSavePulse(true);
+        savePulseTimerRef.current = setTimeout(() => setSavePulse(false), 600);
+      } },
+  ];
 
   const flashKey = useCallback((key) => {
     if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
@@ -30,14 +57,20 @@ export default function FunctionKeyBar() {
       telemetry.event('fkey_press', { key: entry.key, label: entry.label });
       telemetry.event('action_click', { label: entry.label, source });
       flashKey(entry.key);
-      // Real handlers wired in Phase 6 (overlay open/close).
+      entry.run();
     },
     [flashKey],
   );
 
+  // Keep the latest KEYS in a ref so the keydown listener always sees current
+  // enabled/active/run state without re-registering on every render. trigger is
+  // stable (useCallback[flashKey]), so this effect attaches exactly once.
+  const keysRef = useRef(KEYS);
+  keysRef.current = KEYS;
+
   useEffect(() => {
     const handler = (e) => {
-      const match = KEYS.find((k) => k.key === e.key.toUpperCase());
+      const match = keysRef.current.find((k) => k.key === e.key.toUpperCase());
       if (!match || !match.enabled) return;
       e.preventDefault();
       trigger(match, 'keyboard');
@@ -48,6 +81,7 @@ export default function FunctionKeyBar() {
 
   useEffect(() => () => {
     if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    if (savePulseTimerRef.current) clearTimeout(savePulseTimerRef.current);
   }, []);
 
   return (
@@ -58,14 +92,17 @@ export default function FunctionKeyBar() {
             <button
               type="button"
               className={styles.button}
-              data-pressed={flashing === k.key ? 'true' : 'false'}
+              data-pressed={flashing === k.key || k.active ? 'true' : 'false'}
               disabled={!k.enabled}
               aria-keyshortcuts={k.key}
+              aria-pressed={k.active ? 'true' : undefined}
               aria-label={`${k.label} (${k.key})`}
               onClick={() => trigger(k, 'mouse')}
             >
               <span aria-hidden="true" className={styles.bracket}>[</span>
-              <span className={styles.label}>{k.label.toUpperCase()}</span>
+              <span className={styles.label}>
+                {k.key === 'F5' && savePulse ? 'SAVED' : k.label.toUpperCase()}
+              </span>
               <span aria-hidden="true" className={styles.bracket}>]</span>
               <span aria-hidden="true" className={styles.shortcut}>{k.key}</span>
             </button>

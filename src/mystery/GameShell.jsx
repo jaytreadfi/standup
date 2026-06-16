@@ -1,16 +1,26 @@
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   modeAtom,
   overlayAtom,
+  mapOpenAtom,
   useTrackModeChanges,
   useTrackOverlayChanges,
 } from '@/mystery/state/mystery';
 import * as telemetry from '@/mystery/engine/telemetry';
 
 import BootMode from '@/mystery/modes/BootMode.jsx';
+import ColdOpenMode from '@/mystery/modes/ColdOpenMode.jsx';
 import FreeRoamMode from '@/mystery/modes/FreeRoamMode.jsx';
+import DialogueMode from '@/mystery/modes/DialogueMode.jsx';
+import AccusationMode from '@/mystery/modes/AccusationMode.jsx';
+import EndingMode from '@/mystery/modes/EndingMode.jsx';
+
+import MapOverlay from '@/mystery/overlays/MapOverlay.jsx';
+import ExamineOverlay from '@/mystery/overlays/ExamineOverlay.jsx';
+import NotebookOverlay from '@/mystery/overlays/NotebookOverlay.jsx';
+import SuspectsOverlay from '@/mystery/overlays/SuspectsOverlay.jsx';
 
 import TerminalStatusRow from '@/mystery/hud/TerminalStatusRow.jsx';
 import FunctionKeyBar from '@/mystery/hud/FunctionKeyBar.jsx';
@@ -20,72 +30,110 @@ import RecentEvidencePanel from '@/mystery/hud/RecentEvidencePanel.jsx';
 
 import styles from './GameShell.module.css';
 
-const MODE_COMPONENTS = {
+// Cinematic / focused modes — render full-screen, no HUD chrome.
+const FULLSCREEN_MODES = {
   BOOT: BootMode,
+  COLD_OPEN: ColdOpenMode,
+  ACCUSATION: AccusationMode,
+  ENDING: EndingMode,
+};
+
+// Exploration modes — render inside the terminal HUD (status rows + sidebar + F-keys).
+const HUD_MODES = {
   FREE_ROAM: FreeRoamMode,
-  // COLD_OPEN, DIALOGUE, ACCUSATION, ENDING land in later phases. Falls back to FreeRoamMode.
+  DIALOGUE: DialogueMode,
 };
 
 export default function GameShell() {
-  const [mode, setMode] = useAtom(modeAtom);
+  const mode = useAtomValue(modeAtom);
+  const setMode = useSetAtom(modeAtom);
   const overlay = useAtomValue(overlayAtom);
+  const mapOpen = useAtomValue(mapOpenAtom);
+  const shellRef = useRef(null);
 
   useTrackModeChanges();
   useTrackOverlayChanges();
 
-  // Auto-advance from BOOT → FREE_ROAM after a brief beat.
+  // While an overlay/map is open, mark the background HUD inert so the focus
+  // trap is real: Tab can't reach controls behind the scrim and they're not
+  // clickable. The overlays render as siblings of .shell, so they stay live.
+  const overlayOpen = Boolean(overlay) || mapOpen;
+  useEffect(() => {
+    const el = shellRef.current;
+    if (el) el.inert = overlayOpen;
+  }, [overlayOpen]);
+
+  // Auto-advance the boot splash into the cold-open briefing.
   useEffect(() => {
     if (mode === 'BOOT') {
-      const t = setTimeout(() => setMode('FREE_ROAM'), 300);
+      const t = setTimeout(() => setMode('COLD_OPEN'), 300);
       return () => clearTimeout(t);
     }
   }, [mode, setMode]);
 
-  // Telemetry for initial mount
   useEffect(() => {
     telemetry.event('shell_mounted', { ts: Date.now() });
   }, []);
 
-  // Global keydown for F1-F4 (Phase 1: stubbed — see hud/FunctionKeyBar)
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === 'Escape') {
-        // overlay closing handled by overlay components in Phase 6; here we no-op.
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, []);
+  const FullscreenMode = FULLSCREEN_MODES[mode];
+  if (FullscreenMode) {
+    return (
+      <div className={styles.fullscreenShell}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={mode}
+            className={styles.fullscreenFrame}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <FullscreenMode />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  }
 
-  const ActiveMode = MODE_COMPONENTS[mode] || FreeRoamMode;
+  const ActiveMode = HUD_MODES[mode] || FreeRoamMode;
 
   return (
-    <div className={styles.shell}>
-      <TerminalStatusRow />
-      <div className={styles.body}>
-        <main className={styles.modeArea}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={mode}
-              className={styles.modeFrame}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-            >
-              <ActiveMode />
-            </motion.div>
-          </AnimatePresence>
-        </main>
-        <aside className={styles.sidebar}>
-          <RosterPanel />
-          <RecentEvidencePanel />
-        </aside>
+    <>
+      <div className={styles.shell} ref={shellRef}>
+        <TerminalStatusRow />
+        <div className={styles.body}>
+          <main className={styles.modeArea}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mode}
+                className={styles.modeFrame}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+              >
+                <ActiveMode />
+              </motion.div>
+            </AnimatePresence>
+          </main>
+          <aside className={styles.sidebar}>
+            <RosterPanel />
+            <RecentEvidencePanel />
+          </aside>
+        </div>
+        <FunctionKeyBar />
+        <SystemStatusRow />
       </div>
-      <FunctionKeyBar />
-      <SystemStatusRow />
-      {/* Overlay router — Phase 1 stubs only. Real overlays in Phase 6. */}
-      {overlay && <div className={styles.overlayStub} aria-hidden="true">{`Overlay: ${overlay}`}</div>}
-    </div>
+
+      {/* Overlay + map layer — rendered as a SIBLING of .shell so the
+          `.shell > *` relative/z-index rule can't clobber their fixed scrims.
+          Each overlay self-renders a fixed full-screen scrim. */}
+      <AnimatePresence>
+        {overlay === 'EXAMINE' && <ExamineOverlay key="examine" />}
+        {overlay === 'NOTEBOOK' && <NotebookOverlay key="notebook" />}
+        {overlay === 'SUSPECTS' && <SuspectsOverlay key="suspects" />}
+        {mapOpen && <MapOverlay key="map" />}
+      </AnimatePresence>
+    </>
   );
 }

@@ -1,83 +1,173 @@
-import { useAtom, useAtomValue } from 'jotai';
-import TerminalChrome from '@/components/chrome/TerminalChrome';
-import { currentRoomAtom, clockMinutesAtom } from '@/mystery/state/mystery';
-import { periodFor, formatClock } from '@/mystery/engine/clock';
-import { rooms, roomById } from '@/mystery/data/rooms';
-import * as telemetry from '@/mystery/engine/telemetry';
-import floorPlanUrl from '@/assets/floorplan/floor-01.png';
+import { motion } from 'framer-motion';
+import { useAtomValue } from 'jotai';
+
+import SectionLabel from '@/components/chrome/SectionLabel';
+import SpriteFrame from '@/components/chrome/SpriteFrame';
+import { useGameActions } from '@/mystery/state/actions';
+import {
+  currentRoomAtom,
+  clockMinutesAtom,
+  collectedCluesAtom,
+  charactersInRoomAtom,
+} from '@/mystery/state/mystery';
+import { periodFor, formatClock, periodLabel } from '@/mystery/engine/clock';
+import { roomById } from '@/mystery/data/rooms';
+import { sceneUrl, portraitUrl } from '@/mystery/data/scenes';
 import styles from './FreeRoamMode.module.css';
 
-export default function FreeRoamMode() {
-  const [currentRoom, setCurrentRoom] = useAtom(currentRoomAtom);
-  const clockMinutes = useAtomValue(clockMinutesAtom);
-  const period = periodFor(clockMinutes);
-  const label = roomById[currentRoom]?.label ?? currentRoom?.toUpperCase() ?? 'OFFICE';
+const EASE_QUART = [0.76, 0, 0.24, 1];
 
-  const handleNavigate = (roomId) => {
-    if (roomId === currentRoom) return;
-    setCurrentRoom(roomId);
-    telemetry.event(telemetry.EVENT_NAMES.ROOM_ENTER, { from: currentRoom, to: roomId });
-  };
+/**
+ * FreeRoamMode — scene-primary point-and-click view.
+ *
+ * Full-bleed scene art for the current room + time period is the canvas.
+ * EXAMINE reticles and TALK markers float over it; a MAP button bottom-right
+ * opens the navigation overlay. Clicking empty scene does nothing — only the
+ * interactive overlays carry pointer events.
+ */
+export default function FreeRoamMode() {
+  const actions = useGameActions();
+
+  const currentRoom = useAtomValue(currentRoomAtom);
+  const clockMinutes = useAtomValue(clockMinutesAtom);
+  const collectedClues = useAtomValue(collectedCluesAtom);
+  const charactersHere = useAtomValue(charactersInRoomAtom);
+
+  const room = roomById[currentRoom];
+  const period = periodFor(clockMinutes);
+  const label = room?.label ?? currentRoom?.toUpperCase() ?? 'OFFICE';
+  const sceneKey = room?.sceneAssetByPeriod?.[period];
+  const sceneSrc = sceneKey ? sceneUrl(sceneKey) : null;
+
+  const collectedClueIds = new Set(collectedClues.map((c) => c.id));
+  const examineTargets = room?.examineTargets ?? [];
 
   return (
-    <div className={styles.root}>
-      <TerminalChrome
-        sceneId={1}
-        sceneTotal={5}
-        label="Floor Plan"
-        ghostNumber="01"
-      >
-        <div className={styles.canvas} data-period={period}>
-          <div className={styles.mapBox}>
-            <img
-              src={floorPlanUrl}
-              alt="Tread office floor plan"
-              className={styles.floorPlan}
-              draggable="false"
-            />
-            <div className={styles.hotspotLayer}>
-              {rooms.map((room) => {
-                if (!room.mapPosition) return null;
-                const isActive = room.id === currentRoom;
-                return (
-                  <button
-                    key={room.id}
-                    type="button"
-                    className={styles.hotspot}
-                    data-active={isActive || undefined}
-                    style={{
-                      left: `${room.mapPosition.x * 100}%`,
-                      top: `${room.mapPosition.y * 100}%`,
-                    }}
-                    onClick={() => handleNavigate(room.id)}
-                    aria-label={`Go to ${room.label}`}
-                    aria-current={isActive ? 'location' : undefined}
-                  >
-                    <span className={styles.reticle} aria-hidden="true">
-                      <span className={styles.cornerTL} />
-                      <span className={styles.cornerTR} />
-                      <span className={styles.cornerBL} />
-                      <span className={styles.cornerBR} />
-                      <span className={styles.activeFrame} />
-                      <span className={styles.activeDot} />
-                    </span>
-                    <span className={styles.hotspotLabel}>{room.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          <div className={styles.locationBlock}>
-            <span className={styles.locationLabel}>
-              <span className={styles.locationGlyph}>▸</span> CURRENT LOCATION
-            </span>
-            <span className={styles.locationValue}>{label}</span>
-            <span className={styles.locationMeta}>
-              {formatClock(clockMinutes)} · {period.toUpperCase()}
-            </span>
-          </div>
+    <div className={styles.root} data-period={period}>
+      {/* ---- Full-bleed scene art (or NO FEED placeholder) ---- */}
+      {sceneSrc ? (
+        <motion.img
+          key={sceneSrc}
+          src={sceneSrc}
+          alt={`${label} — ${period}`}
+          className={styles.scene}
+          draggable="false"
+          initial={{ opacity: 0, scale: 1.015 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.35, ease: EASE_QUART }}
+        />
+      ) : (
+        <div className={styles.noFeed} role="img" aria-label={`${label} — no feed`}>
+          <span className={styles.noFeedRoom}>{label}</span>
+          <span className={styles.noFeedTag}>NO FEED</span>
         </div>
-      </TerminalChrome>
+      )}
+
+      {/* ---- Vignette / scrim so HUD text stays legible ---- */}
+      <div className={styles.scrim} aria-hidden="true" />
+
+      {/* ---- Corner room tag (SectionLabel-style) ---- */}
+      <SectionLabel index={1} total={5} label={label} position="tl" />
+
+      {/* ---- EXAMINE hotspots ---- */}
+      <div className={styles.hotspotLayer}>
+        {examineTargets.map((target, i) => {
+          const logged = target.clueId ? collectedClueIds.has(target.clueId) : false;
+          return (
+            <motion.button
+              key={target.id}
+              type="button"
+              className={styles.hotspot}
+              data-logged={logged || undefined}
+              style={{ left: `${target.x * 100}%`, top: `${target.y * 100}%` }}
+              onClick={() => actions.openExamine(target.id)}
+              aria-label={`Examine ${target.label}${logged ? ' (logged)' : ''}`}
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.28, delay: 0.12 + i * 0.07, ease: EASE_QUART }}
+            >
+              <span className={styles.reticle} aria-hidden="true">
+                <span className={styles.cornerTL} />
+                <span className={styles.cornerTR} />
+                <span className={styles.cornerBL} />
+                <span className={styles.cornerBR} />
+                <span className={styles.reticleDot} />
+                <span className={styles.reticleCheck}>✓</span>
+              </span>
+              <span className={styles.hotspotLabel}>
+                {logged ? 'LOGGED · ' : ''}
+                {target.label}
+              </span>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* ---- TALK markers for characters present ---- */}
+      <div className={styles.talkLayer}>
+        {charactersHere.map((char, i) => {
+          const count = charactersHere.length;
+          // Spread evenly across the lower third; single marker sits center.
+          const frac = count === 1 ? 0.5 : 0.18 + (i * (0.64 / (count - 1)));
+          const portrait = portraitUrl(char.id);
+          return (
+            <motion.button
+              key={char.id}
+              type="button"
+              className={styles.talkMarker}
+              style={{ left: `${frac * 100}%` }}
+              onClick={() => actions.startDialogue(char.id)}
+              aria-label={`Talk to ${char.name}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.16 + i * 0.08, ease: EASE_QUART }}
+            >
+              <span className={styles.talkAvatar} aria-hidden="true">
+                <span className={styles.talkPulse} />
+                {portrait ? (
+                  <SpriteFrame
+                    src={portrait}
+                    cols={3}
+                    rows={3}
+                    col={0}
+                    row={0}
+                    size={56}
+                    bordered={false}
+                  />
+                ) : (
+                  <span className={styles.talkGlyph}>◆</span>
+                )}
+              </span>
+              <span className={styles.talkName}>{char.name}</span>
+              <span className={styles.talkVerb}>TALK</span>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* ---- CURRENT LOCATION caption, bottom-left ---- */}
+      <div className={styles.locationBlock}>
+        <span className={styles.locationLabel}>
+          <span className={styles.locationGlyph}>▸</span> CURRENT LOCATION
+        </span>
+        <span className={styles.locationValue}>{label}</span>
+        <span className={styles.locationMeta}>
+          {formatClock(clockMinutes)} · {periodLabel(period)}
+        </span>
+      </div>
+
+      {/* ---- MAP button, bottom-right ---- */}
+      <motion.button
+        type="button"
+        className={styles.mapButton}
+        onClick={() => actions.openMap()}
+        aria-label="Open floor map"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.2, ease: EASE_QUART }}
+      >
+        <span className={styles.mapGlyph} aria-hidden="true">▸</span> MAP
+      </motion.button>
     </div>
   );
 }
