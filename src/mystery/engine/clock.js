@@ -4,7 +4,7 @@
  * The in-game day begins at 9:00 AM (minute 0). The workday budget runs
  * through 5:00 PM (minute 480). The clock continues past that, cycling
  * through dusk and night until sunrise at minute 1260 (next-day 6:00 AM) —
- * the board deadline the whole case advertises.
+ * the first-shift deadline the whole case advertises.
  *
  * All exports are pure functions or plain constants — no side effects,
  * no external imports.
@@ -25,7 +25,7 @@ export const TIME_COSTS = {
 
 /**
  * The minute at which sunrise occurs (next-day 6:00 AM) — the advertised
- * board deadline. formatClock(SUNRISE_MINUTE) === '06:00 AM'.
+ * first-shift deadline. formatClock(SUNRISE_MINUTE) === '06:00 AM'.
  *
  * @type {number}
  */
@@ -130,7 +130,7 @@ export function periodLabel(period) {
 }
 
 /**
- * Returns true once the clock has reached or passed sunrise (minute 1410).
+ * Returns true once the clock has reached or passed sunrise (minute 1260, SUNRISE_MINUTE).
  *
  * @param {number} minutes - Elapsed minutes since 9:00 AM.
  * @returns {boolean}

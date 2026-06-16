@@ -10,13 +10,6 @@ import { roomById } from '@/mystery/data/rooms';
 import { formatClock } from '@/mystery/engine/clock';
 import styles from './NotebookOverlay.module.css';
 
-/** Map a clue weight to the visual tier used for its tag color. */
-function weightTier(weight) {
-  if (weight === 'HEAVY') return 'heavy';
-  if (weight === 'CORE') return 'core';
-  return 'weak';
-}
-
 /**
  * NotebookOverlay — the case file / evidence ledger.
  * Mounted by the lead when overlayAtom === 'NOTEBOOK'.
@@ -110,7 +103,6 @@ export default function NotebookOverlay() {
               <ul className={styles.list}>
                 {entries.map((entry, idx) => {
                   const { clue } = entry;
-                  const tier = weightTier(clue.weight);
                   const source = roomById[clue.source]?.label ?? clue.source;
                   const time =
                     typeof entry.atMinute === 'number'
@@ -123,12 +115,6 @@ export default function NotebookOverlay() {
                           {String(idx + 1).padStart(2, '0')}
                         </span>
                         <span className={styles.entryLabel}>{clue.label}</span>
-                        <span
-                          className={styles.weightTag}
-                          data-weight={tier}
-                        >
-                          {clue.weight}
-                        </span>
                       </div>
                       <p className={styles.entryDesc}>{clue.description}</p>
                       <div className={styles.entryMeta}>

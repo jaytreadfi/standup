@@ -4,14 +4,13 @@ import { motion } from 'framer-motion';
 
 import TerminalChrome from '@/components/chrome/TerminalChrome';
 import ScrambleText from '@/components/chrome/ScrambleText';
-import SlotNumber from '@/components/chrome/SlotNumber';
 import FlashWipe from '@/components/chrome/FlashWipe';
 
 import { useGameActions } from '@/mystery/state/actions';
 import { useDialogFocus } from './useDialogFocus';
 import { examineAtom, clockMinutesAtom } from '@/mystery/state/mystery';
 import { examineTargetById, roomById } from '@/mystery/data/rooms';
-import { clueById, WEIGHT_VALUE } from '@/mystery/data/clues';
+import { clueById } from '@/mystery/data/clues';
 import { sceneUrl } from '@/mystery/data/scenes';
 import { periodFor } from '@/mystery/engine/clock';
 
@@ -146,8 +145,6 @@ export default function ExamineOverlay() {
   const fx = typeof target.x === 'number' ? target.x : 0.5;
   const fy = typeof target.y === 'number' ? target.y : 0.5;
 
-  const weightNum = clue ? (WEIGHT_VALUE[clue.weight] ?? 0) : 0;
-
   return (
     <motion.div
       className={styles.scrim}
@@ -248,16 +245,6 @@ export default function ExamineOverlay() {
                       </div>
                       <div className={styles.evidenceRow}>
                         <span className={styles.evidenceLabel}>{clue.label}</span>
-                        <span className={styles.evidenceWeight}>
-                          [<span className={styles.weightTag}>{clue.weight}</span>
-                          <span className={styles.weightSep}>·</span>
-                          <SlotNumber
-                            value={weightNum}
-                            duration={420}
-                            className={styles.weightNum}
-                          />
-                          ]
-                        </span>
                       </div>
                     </motion.div>
                   ) : (

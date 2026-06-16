@@ -4,28 +4,12 @@ import SpriteFrame from '@/components/chrome/SpriteFrame';
 import {
   clockMinutesAtom,
   charactersInRoomAtom,
-  suspicionByCharacterAtom,
 } from '@/mystery/state/mystery';
 import { characters } from '@/mystery/data/characters';
 import { roomById } from '@/mystery/data/rooms';
 import { roomByCharacter } from '@/mystery/engine/schedule';
-import { badgeFor } from '@/mystery/engine/suspicion';
 import { portraitUrl } from '@/mystery/data/scenes';
 import styles from './RosterPanel.module.css';
-
-/**
- * Suspicion tier from a 2-digit badge string.
- *  ≤5  = muted   (low / dormant)
- *  6-8 = warn    (rising)
- *  ≥9  = danger  (acute)
- */
-function suspicionTier(value) {
-  const n = Number.parseInt(value, 10);
-  if (Number.isNaN(n)) return 'mute';
-  if (n >= 9) return 'danger';
-  if (n >= 6) return 'warn';
-  return 'mute';
-}
 
 /**
  * Status renderer. Composite forms like "SOFA · IDLE" or "ELEVATOR · 02:04"
@@ -53,7 +37,6 @@ function StatusLine({ value }) {
 
 export default function RosterPanel() {
   const clockMinutes = useAtomValue(clockMinutesAtom);
-  const suspicion = useAtomValue(suspicionByCharacterAtom);
   // charactersInRoom is read live so the "active" stripe stays reactive to the clock.
   const charactersHere = useAtomValue(charactersInRoomAtom);
 
@@ -75,8 +58,6 @@ export default function RosterPanel() {
             const status = c.dead
               ? 'DECEASED'
               : (roomById[room]?.label ?? '—').toUpperCase();
-            const raw = suspicion[c.id]?.raw ?? 0;
-            const badge = c.dead ? '——' : badgeFor(raw);
             const active = !c.dead && hereIds.has(c.id);
 
             return (
@@ -101,12 +82,6 @@ export default function RosterPanel() {
                 <span className={styles.identity}>
                   <span className={styles.name}>{c.name.toUpperCase()}</span>
                   <StatusLine value={status} />
-                </span>
-                <span
-                  className={styles.badge}
-                  data-tier={suspicionTier(badge)}
-                >
-                  {badge}
                 </span>
               </li>
             );

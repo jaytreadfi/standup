@@ -84,7 +84,7 @@ export const dialogue = {
     nodes: {
       a: {
         speaker: 'Dena',
-        text: 'It’s an accident. It has to be an accident. David said— ' + '...look at Poncho if you’re going to look at anyone. He’s the one who fell apart. Owed Sam money.',
+        text: 'It’s an accident. It has to be an accident. David said— never mind. Look at Poncho if you’re going to look at anyone. He’s the one who fell apart. Owed Sam money.',
         choices: [
           { label: '“David told you to say that.”', to: 'b' },
           { label: '“Maybe.”', setFlag: 'dena_steered', end: true },
@@ -111,7 +111,7 @@ export const dialogue = {
       },
       b: {
         speaker: 'Poncho',
-        text: 'Stuck in this elevator, signal-dead, since one. Check the maintenance call log if you don’t believe me. I’m a coward, man. Not a killer.',
+        text: 'Stuck in the south car, signal-dead, since one — the other elevator still runs, before you ask. Check the maintenance call log. I’m a coward, man. Not a killer.',
         choices: [{ label: '“Okay. Sit tight.”', setFlag: 'poncho_cleared', end: true }],
       },
     },

@@ -9,10 +9,10 @@ import styles from './ColdOpenMode.module.css';
 /**
  * ColdOpenMode — the cinematic briefing beat (modeAtom === 'COLD_OPEN').
  *
- * Staged reveal of David's pitch: the new intern, a gutted deck, board at
- * sunrise. Lines are drawn straight from data/dialogue.david so the cold open
- * stays consistent with the in-room conversation. Ends on a single decisive
- * "[ BEGIN SHIFT ]" that hands control back to actions.beginShift().
+ * Staged reveal of David's briefing: the body on the floor, the night-desk
+ * intern, first shift at 06:00. Lines are drawn straight from data/dialogue.david
+ * so the cold open stays consistent with the in-room conversation. Ends on a
+ * single decisive "[ BEGIN SHIFT ]" that hands control back to actions.beginShift().
  */
 
 const EASE_QUART = [0.76, 0, 0.24, 1];

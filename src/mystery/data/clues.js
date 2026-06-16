@@ -65,7 +65,7 @@ export const clues = [
   {
     id: 'owed-note',
     label: 'PONCHO’S IOU',
-    description: 'A crumpled IOU in Poncho’s jacket on the lounge — a lot of money owed to Sam. Looks damning. It’s also dated last month, and torn down the middle.',
+    description: 'A crumpled IOU in Poncho’s jacket on the lounge — a lot of money owed to Sam. Looks damning. It’s also dated weeks back, and already torn down the middle.',
     weight: 'WEAK',
     evidenceAgainst: ['poncho'],
     source: 'sofa',
@@ -91,7 +91,7 @@ export const clues = [
   {
     id: 'ching-motive',
     label: 'CHING’S SECRET',
-    description: 'Sam was bleeding Ching too — something personal. A real motive. But Ching had a bag packed and a cab booked out of town tonight.',
+    description: 'Sam was bleeding Ching too — something personal. A real motive. But Ching had a bag packed and a cab booked for half four — after the murder, headed away from it.',
     weight: 'WEAK',
     evidenceAgainst: ['ching'],
     source: 'ching',

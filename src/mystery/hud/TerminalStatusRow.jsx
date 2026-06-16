@@ -50,8 +50,8 @@ export default function TerminalStatusRow() {
         </span>
         <span className={styles.pipe} aria-hidden="true">|</span>
         <span className={styles.sunriseCell}>
-          <span className={styles.clockLabel}>SUNRISE</span>
-          <span className={styles.sunriseValue}>06:00:00</span>
+          <span className={styles.clockLabel}>FIRST SHIFT</span>
+          <span className={styles.sunriseValue}>06:00</span>
         </span>
       </div>
     </header>

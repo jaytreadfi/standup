@@ -32,7 +32,7 @@ export const rooms = [
     sceneAssetByPeriod: { morning: 'coworking-day', dusk: 'coworking-dusk', night: 'coworking-night' },
     adjacents: ALL_ADJACENT.filter((r) => r !== 'coworking'),
     examineTargets: [
-      { id: 'cw-body', label: 'THE BODY', x: 0.40, y: 0.62, flavor: 'Sam, face-down between the desks. The skin says hours. The bruise on the forearm says they saw it coming — and the phone that never leaves their hand is gone.', clueId: 'the-body' },
+      { id: 'cw-body', label: 'THE BODY', x: 0.40, y: 0.62, flavor: 'Sam, face-down between the desks. The skin says hours. The bruise on the forearm says they saw it coming — and the phone that never leaves their hand is gone. A whiff of good whiskey still hangs over them. Sam didn’t drink alone tonight.', clueId: 'the-body' },
       { id: 'cw-window', label: 'THE WINDOW', x: 0.72, y: 0.34, flavor: 'Rain sheeting down forty floors of glass. The city glitters and doesn’t care. It never does.' },
     ],
     schematic: { x: 0.68, y: 0.54, w: 0.28, h: 0.38 },
@@ -68,7 +68,7 @@ export const rooms = [
     sceneAssetByPeriod: { morning: 'sofa-day', dusk: 'sofa-dusk', night: 'sofa-night' },
     adjacents: ALL_ADJACENT.filter((r) => r !== 'sofa'),
     examineTargets: [
-      { id: 'sf-jacket', label: 'PONCHO’S JACKET', x: 0.46, y: 0.62, flavor: 'Poncho’s jacket, thrown over the lounge arm. In the pocket, a crumpled IOU — a lot owed to Sam. Damning, until you notice it’s a month old and torn clean down the middle.', clueId: 'owed-note' },
+      { id: 'sf-jacket', label: 'PONCHO’S JACKET', x: 0.46, y: 0.62, flavor: 'Poncho’s jacket, thrown over the lounge arm. In the pocket, a crumpled IOU — a lot owed to Sam. Damning, until you notice it’s weeks old and already torn clean down the middle.', clueId: 'owed-note' },
     ],
     schematic: { x: 0.04, y: 0.08, w: 0.28, h: 0.38 },
   },

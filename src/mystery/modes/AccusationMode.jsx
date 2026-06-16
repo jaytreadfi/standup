@@ -9,11 +9,9 @@ import { useGameActions } from '@/mystery/state/actions';
 import {
   accusationAtom,
   collectedCluesAtom,
-  suspicionByCharacterAtom,
 } from '@/mystery/state/mystery';
 import { suspects } from '@/mystery/data/characters';
 import { clueById } from '@/mystery/data/clues';
-import { badgeFor } from '@/mystery/engine/suspicion';
 
 import { portraitUrl } from '@/mystery/data/scenes';
 
@@ -22,7 +20,7 @@ import styles from './AccusationMode.module.css';
 /**
  * AccusationMode — the "name them" screen (modeAtom === 'ACCUSATION').
  *
- * Top: SUSPECT BOARD — pick exactly one suspect.
+ * Top: SUSPECT BOARD — pick exactly one suspect (no guilt meter; you decide).
  * Bottom: EVIDENCE — pick exactly three collected clues to enter into the record.
  * Confirm is one-shot, no take-backs; locked until 1 suspect + 3 clues are set.
  */
@@ -31,24 +29,10 @@ const REQUIRED_CLUES = 3;
 
 const EASE_QUART = [0.76, 0, 0.24, 1];
 
-/**
- * Suspicion tier from a raw score — mirrors RosterPanel's thresholds so the
- * board and the watchlist agree on who is hot.
- *  ≤5  = mute   (low / dormant)
- *  6-8 = warn   (rising)
- *  ≥9  = danger (acute)
- */
-function suspicionTier(raw) {
-  if (raw >= 9) return 'danger';
-  if (raw >= 6) return 'warn';
-  return 'mute';
-}
-
 export default function AccusationMode() {
   const actions = useGameActions();
   const { suspectId, selectedClueIds } = useAtomValue(accusationAtom);
   const collectedClues = useAtomValue(collectedCluesAtom);
-  const suspicion = useAtomValue(suspicionByCharacterAtom);
 
   const clueCount = selectedClueIds.length;
   const hasEnoughEvidence = collectedClues.length >= REQUIRED_CLUES;
@@ -92,8 +76,6 @@ export default function AccusationMode() {
 
             <div className={styles.suspectGrid}>
               {suspects.map((s, i) => {
-                const raw = suspicion[s.id]?.raw ?? 0;
-                const tier = suspicionTier(raw);
                 const isChosen = s.id === suspectId;
                 return (
                   <motion.button
@@ -109,13 +91,6 @@ export default function AccusationMode() {
                   >
                     <span className={styles.cardTop}>
                       <span className={styles.slot}>{s.slot}</span>
-                      <span
-                        className={styles.suspBadge}
-                        data-tier={tier}
-                        title="Suspicion"
-                      >
-                        {badgeFor(raw)}
-                      </span>
                     </span>
                     <span className={styles.portraitWrap}>
                       <SpriteFrame
@@ -185,9 +160,6 @@ export default function AccusationMode() {
                       </span>
                       <span className={styles.clueBody}>
                         <span className={styles.clueLabel}>{clue.label}</span>
-                        <span className={styles.clueWeight} data-weight={clue.weight}>
-                          {clue.weight}
-                        </span>
                       </span>
                     </motion.button>
                   );
