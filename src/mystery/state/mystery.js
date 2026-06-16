@@ -13,6 +13,10 @@ import { useEffect, useRef } from 'react';
 import * as saveLoad from '@/mystery/engine/saveLoad';
 import * as telemetry from '@/mystery/engine/telemetry';
 import { canOpenOverlay as canOpenOverlayFn } from '@/mystery/engine/canOpenOverlay';
+import { charactersInRoom } from '@/mystery/engine/schedule';
+import { suspicionByCharacter } from '@/mystery/engine/suspicion';
+import { characters, suspects } from '@/mystery/data/characters';
+import { clues } from '@/mystery/data/clues';
 
 // ---------------------------------------------------------------------------
 // Bootstrap: read persisted state once at module load time.
@@ -30,6 +34,7 @@ const _initial = _loaded ?? {
   dialogue: null,
   examine: null,
   ending: null,
+  accusation: { suspectId: null, selectedClueIds: [] },
   objective: 'Identify who gutted the deck. Sunrise: 06:00.',
 };
 
@@ -44,7 +49,7 @@ if (_loaded) {
 /** @type {import('jotai').PrimitiveAtom<'BOOT'|'COLD_OPEN'|'FREE_ROAM'|'DIALOGUE'|'ACCUSATION'|'ENDING'>} */
 export const modeAtom = atom(_initial.mode);
 
-/** @type {import('jotai').PrimitiveAtom<'NOTEBOOK'|'LOCKER'|'SUSPECTS'|'EXAMINE'|null>} */
+/** @type {import('jotai').PrimitiveAtom<'NOTEBOOK'|'SUSPECTS'|'EXAMINE'|null>} */
 export const overlayAtom = atom(_initial.overlay);
 
 /** @type {import('jotai').PrimitiveAtom<number>} */
@@ -66,11 +71,23 @@ export const collectedCluesAtom = atom(
 /** @type {import('jotai').PrimitiveAtom<{storyId: string, currentText: string, choices: Array, history: Array}|null>} */
 export const dialogueAtom = atom(_initial.dialogue ?? null);
 
-/** @type {import('jotai').PrimitiveAtom<{hotspotId: string}|null>} */
+/** @type {import('jotai').PrimitiveAtom<{targetId: string, roomId: string}|null>} */
 export const examineAtom = atom(_initial.examine ?? null);
 
 /** @type {import('jotai').PrimitiveAtom<'A'|'B'|'C'|'D'|null>} */
 export const endingAtom = atom(_initial.ending ?? null);
+
+/** @type {import('jotai').PrimitiveAtom<{suspectId: string|null, selectedClueIds: string[]}>} */
+export const accusationAtom = atom(
+  _initial.accusation ?? { suspectId: null, selectedClueIds: [] },
+);
+
+/**
+ * Whether the floor-plan MAP overlay is open. Navigation surface, distinct from
+ * the info overlays (overlayAtom). Transient — not persisted.
+ * @type {import('jotai').PrimitiveAtom<boolean>}
+ */
+export const mapOpenAtom = atom(false);
 
 /** @type {import('jotai').PrimitiveAtom<string>} */
 export const objectiveAtom = atom(
@@ -82,20 +99,26 @@ export const objectiveAtom = atom(
 // ---------------------------------------------------------------------------
 
 /**
- * CharacterId → suspicion value 0..1.
- * Implemented by engine/suspicion.js in Phase 6.
+ * CharacterId → { raw, value } suspicion, derived from collected clues.
  */
-export const suspicionByCharacterAtom = atom(() => ({}));
+export const suspicionByCharacterAtom = atom((get) =>
+  suspicionByCharacter(
+    get(collectedCluesAtom).map((c) => c.id),
+    clues,
+    suspects,
+  ),
+);
 
 /**
- * Characters currently present in the active room.
- * Implemented by engine/schedule.js in Phase 7.
+ * Characters currently present in the active room (by schedule + clock).
  */
-export const charactersInRoomAtom = atom(() => []);
+export const charactersInRoomAtom = atom((get) =>
+  charactersInRoom(characters, get(clockMinutesAtom), get(currentRoomAtom)),
+);
 
 /**
- * Characters who just left the active room.
- * Implemented by engine/schedule.js in Phase 7.
+ * Characters who just left the active room. Reserved for a later "just left"
+ * hint; empty for this slice.
  */
 export const justLeftFromRoomAtom = atom(() => []);
 
@@ -126,6 +149,7 @@ export function usePersistMystery() {
   const dialogue = useAtomValue(dialogueAtom);
   const examine = useAtomValue(examineAtom);
   const ending = useAtomValue(endingAtom);
+  const accusation = useAtomValue(accusationAtom);
   const objective = useAtomValue(objectiveAtom);
 
   const timerRef = useRef(null);
@@ -144,6 +168,7 @@ export function usePersistMystery() {
         dialogue,
         examine,
         ending,
+        accusation,
         objective,
       });
     }, 100);
@@ -151,7 +176,7 @@ export function usePersistMystery() {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [mode, overlay, clockMinutes, currentRoom, flags, collectedClues, dialogue, examine, ending, objective]);
+  }, [mode, overlay, clockMinutes, currentRoom, flags, collectedClues, dialogue, examine, ending, accusation, objective]);
 }
 
 // ---------------------------------------------------------------------------

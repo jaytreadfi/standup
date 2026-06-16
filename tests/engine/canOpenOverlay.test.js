@@ -14,15 +14,13 @@ describe('canOpenOverlay', () => {
   // FREE_ROAM allows every overlay
   describe('FREE_ROAM mode', () => {
     it('allows NOTEBOOK', () => expect(canOpenOverlay('FREE_ROAM', 'NOTEBOOK')).toBe(true));
-    it('allows LOCKER',   () => expect(canOpenOverlay('FREE_ROAM', 'LOCKER')).toBe(true));
     it('allows SUSPECTS', () => expect(canOpenOverlay('FREE_ROAM', 'SUSPECTS')).toBe(true));
     it('allows EXAMINE',  () => expect(canOpenOverlay('FREE_ROAM', 'EXAMINE')).toBe(true));
   });
 
-  // DIALOGUE allows NOTEBOOK/LOCKER/SUSPECTS but not EXAMINE
+  // DIALOGUE allows NOTEBOOK/SUSPECTS but not EXAMINE
   describe('DIALOGUE mode', () => {
     it('allows NOTEBOOK', () => expect(canOpenOverlay('DIALOGUE', 'NOTEBOOK')).toBe(true));
-    it('allows LOCKER',   () => expect(canOpenOverlay('DIALOGUE', 'LOCKER')).toBe(true));
     it('allows SUSPECTS', () => expect(canOpenOverlay('DIALOGUE', 'SUSPECTS')).toBe(true));
     it('blocks EXAMINE',  () => expect(canOpenOverlay('DIALOGUE', 'EXAMINE')).toBe(false));
   });
@@ -30,7 +28,7 @@ describe('canOpenOverlay', () => {
   // Locked-out modes: BOOT, COLD_OPEN, ACCUSATION, ENDING — all false
   describe('locked-out modes block all overlays', () => {
     const blockedModes = ['BOOT', 'COLD_OPEN', 'ACCUSATION', 'ENDING'];
-    const overlays = ['NOTEBOOK', 'LOCKER', 'SUSPECTS', 'EXAMINE'];
+    const overlays = ['NOTEBOOK', 'SUSPECTS', 'EXAMINE'];
 
     for (const mode of blockedModes) {
       for (const overlay of overlays) {

@@ -9,31 +9,35 @@ import {
 
 describe('TIME_COSTS', () => {
   it('exports TIME_COSTS with the expected action costs', () => {
-    expect(TIME_COSTS.TRAVEL).toBe(5);
-    expect(TIME_COSTS.EXAMINE).toBe(10);
-    expect(TIME_COSTS.DIALOGUE_NODE).toBe(15);
+    expect(TIME_COSTS.TRAVEL).toBe(20);
+    expect(TIME_COSTS.EXAMINE).toBe(30);
+    expect(TIME_COSTS.DIALOGUE_NODE).toBe(25);
     expect(TIME_COSTS.OVERLAY_OPEN).toBe(0);
     expect(TIME_COSTS.ACCUSATION_OPEN).toBe(0);
   });
 });
 
 describe('SUNRISE_MINUTE', () => {
-  it('equals 1410', () => {
-    expect(SUNRISE_MINUTE).toBe(1410);
+  it('equals 1260 (06:00 AM — the advertised board deadline)', () => {
+    expect(SUNRISE_MINUTE).toBe(1260);
+  });
+
+  it('formats as 06:00 AM, matching every player-facing deadline string', () => {
+    expect(formatClock(SUNRISE_MINUTE)).toBe('06:00 AM');
   });
 });
 
 describe('advance', () => {
-  it('returns 5 for TRAVEL from minute 0', () => {
-    expect(advance(0, 'TRAVEL')).toBe(5);
+  it('returns 20 for TRAVEL from minute 0', () => {
+    expect(advance(0, 'TRAVEL')).toBe(20);
   });
 
-  it('returns 10 for EXAMINE from minute 0', () => {
-    expect(advance(0, 'EXAMINE')).toBe(10);
+  it('returns 30 for EXAMINE from minute 0', () => {
+    expect(advance(0, 'EXAMINE')).toBe(30);
   });
 
-  it('returns 15 for DIALOGUE_NODE from minute 0', () => {
-    expect(advance(0, 'DIALOGUE_NODE')).toBe(15);
+  it('returns 25 for DIALOGUE_NODE from minute 0', () => {
+    expect(advance(0, 'DIALOGUE_NODE')).toBe(25);
   });
 
   it('returns unchanged minutes for OVERLAY_OPEN (0 cost)', () => {
@@ -74,8 +78,8 @@ describe('formatClock', () => {
     expect(formatClock(900)).toBe('12:00 AM');
   });
 
-  it('formats minute 1410 as 08:30 AM (sunrise threshold; 9 AM start + 23h30m)', () => {
-    expect(formatClock(1410)).toBe('08:30 AM');
+  it('formats minute 1260 as 06:00 AM (sunrise threshold; 9 AM start + 21h)', () => {
+    expect(formatClock(1260)).toBe('06:00 AM');
   });
 
   it('formats minute 1440 as 09:00 AM (full 24h cycle from 9 AM start)', () => {
@@ -110,11 +114,11 @@ describe('isPastSunrise', () => {
     expect(isPastSunrise(0)).toBe(false);
   });
 
-  it('returns false at minute 1409 (one before sunrise)', () => {
-    expect(isPastSunrise(1409)).toBe(false);
+  it('returns false at minute 1259 (one before sunrise)', () => {
+    expect(isPastSunrise(1259)).toBe(false);
   });
 
-  it('returns true at minute 1410 (sunrise)', () => {
-    expect(isPastSunrise(1410)).toBe(true);
+  it('returns true at minute 1260 (sunrise)', () => {
+    expect(isPastSunrise(1260)).toBe(true);
   });
 });

@@ -3,44 +3,38 @@
  * Pure function. No imports.
  *
  * Modes:   'BOOT' | 'COLD_OPEN' | 'FREE_ROAM' | 'DIALOGUE' | 'ACCUSATION' | 'ENDING'
- * Overlays: 'NOTEBOOK' | 'LOCKER' | 'SUSPECTS' | 'EXAMINE' | null
+ * Overlays: 'NOTEBOOK' | 'SUSPECTS' | 'EXAMINE' | null
  */
 
 /** @type {{ [mode: string]: { [overlay: string]: boolean } }} */
 export const OVERLAY_RULES = {
   FREE_ROAM: {
     NOTEBOOK: true,
-    LOCKER:   true,
     SUSPECTS: true,
     EXAMINE:  true,
   },
   DIALOGUE: {
     NOTEBOOK: true,
-    LOCKER:   true,
     SUSPECTS: true,
     EXAMINE:  false, // cannot examine while in conversation
   },
   BOOT: {
     NOTEBOOK: false,
-    LOCKER:   false,
     SUSPECTS: false,
     EXAMINE:  false,
   },
   COLD_OPEN: {
     NOTEBOOK: false,
-    LOCKER:   false,
     SUSPECTS: false,
     EXAMINE:  false,
   },
   ACCUSATION: {
     NOTEBOOK: false,
-    LOCKER:   false,
     SUSPECTS: false,
     EXAMINE:  false,
   },
   ENDING: {
     NOTEBOOK: false,
-    LOCKER:   false,
     SUSPECTS: false,
     EXAMINE:  false,
   },

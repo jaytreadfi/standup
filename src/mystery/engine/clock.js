@@ -3,7 +3,8 @@
  *
  * The in-game day begins at 9:00 AM (minute 0). The workday budget runs
  * through 5:00 PM (minute 480). The clock continues past that, cycling
- * through dusk and night until sunrise at minute 1410 (next-day 9:00 AM).
+ * through dusk and night until sunrise at minute 1260 (next-day 6:00 AM) —
+ * the board deadline the whole case advertises.
  *
  * All exports are pure functions or plain constants — no side effects,
  * no external imports.
@@ -15,19 +16,20 @@
  * @type {{ TRAVEL: number, EXAMINE: number, DIALOGUE_NODE: number, OVERLAY_OPEN: number, ACCUSATION_OPEN: number }}
  */
 export const TIME_COSTS = {
-  TRAVEL: 5,
-  EXAMINE: 10,
-  DIALOGUE_NODE: 15,
+  TRAVEL: 20,
+  EXAMINE: 30,
+  DIALOGUE_NODE: 25,
   OVERLAY_OPEN: 0,
   ACCUSATION_OPEN: 0,
 };
 
 /**
- * The minute at which sunrise occurs (next-day 9:00 AM).
+ * The minute at which sunrise occurs (next-day 6:00 AM) — the advertised
+ * board deadline. formatClock(SUNRISE_MINUTE) === '06:00 AM'.
  *
  * @type {number}
  */
-export const SUNRISE_MINUTE = 1410;
+export const SUNRISE_MINUTE = 1260;
 
 /**
  * The number of minutes in the standard 9 AM – 5 PM workday budget.
@@ -45,7 +47,7 @@ export const DAY_BUDGET_MINUTES = 480;
  * @throws {Error} If action is not a recognized TIME_COSTS key.
  *
  * @example
- * advance(0, 'TRAVEL')       // 5
+ * advance(0, 'TRAVEL')       // 20
  * advance(75, 'OVERLAY_OPEN') // 75
  */
 export function advance(currentMinutes, action) {
@@ -74,7 +76,7 @@ export function advance(currentMinutes, action) {
  * formatClock(180)  // '12:00 PM'
  * formatClock(240)  // '01:00 PM'
  * formatClock(900)  // '12:00 AM'
- * formatClock(1410) // '09:00 AM'
+ * formatClock(1260) // '06:00 AM' (sunrise)
  */
 export function formatClock(minutes) {
   const MINUTES_PER_DAY = 24 * 60;
@@ -114,14 +116,28 @@ export function periodFor(minutes) {
 }
 
 /**
+ * Human display label for a period. The 'morning' art key actually covers the
+ * whole 9 AM–3 PM daytime block, so we surface it as "DAY" to avoid the
+ * "02:10 PM · MORNING" mismatch a player would otherwise read in the HUD.
+ *
+ * @param {'morning'|'dusk'|'night'} period
+ * @returns {string}
+ */
+export const PERIOD_LABEL = { morning: 'DAY', dusk: 'DUSK', night: 'NIGHT' };
+
+export function periodLabel(period) {
+  return PERIOD_LABEL[period] ?? String(period).toUpperCase();
+}
+
+/**
  * Returns true once the clock has reached or passed sunrise (minute 1410).
  *
  * @param {number} minutes - Elapsed minutes since 9:00 AM.
  * @returns {boolean}
  *
  * @example
- * isPastSunrise(1410) // true
- * isPastSunrise(1409) // false
+ * isPastSunrise(1260) // true
+ * isPastSunrise(1259) // false
  */
 export function isPastSunrise(minutes) {
   return minutes >= SUNRISE_MINUTE;

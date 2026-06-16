@@ -18,9 +18,10 @@ export const EVENT_NAMES = Object.freeze({
 /** @returns {{ v: number, events: Array }} */
 function readStore() {
   try {
-    const raw = getItem(TELEMETRY_KEY);
-    if (!raw) return { v: TELEMETRY_VERSION, events: [] };
-    const parsed = JSON.parse(raw);
+    // safeStorage.getItem already JSON-parses, so this is a plain object (or a
+    // string if a legacy double-encoded value is read — caught by the typeof
+    // guard below, which falls back to a fresh store).
+    const parsed = getItem(TELEMETRY_KEY);
     if (
       parsed === null ||
       typeof parsed !== 'object' ||
@@ -52,7 +53,8 @@ export function event(name, payload) {
     store.events = store.events.slice(store.events.length - MAX_EVENTS);
   }
 
-  setItem(TELEMETRY_KEY, JSON.stringify(store));
+  // Pass the plain object — safeStorage.setItem serializes once (mirrors saveLoad).
+  setItem(TELEMETRY_KEY, store);
 }
 
 /**
