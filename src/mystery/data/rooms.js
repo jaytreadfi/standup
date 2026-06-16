@@ -1,24 +1,23 @@
 /**
- * rooms.js — canonical room data for Tread Office.
+ * rooms.js — canonical room data for the office, the night of the murder.
  *
  * Pure data. No imports from React, Jotai, or engine modules.
  * Engine + view layers consume this; this consumes nothing (asset KEYS only;
  * resolution to URLs happens in data/scenes.js).
  *
- * The six rooms of the Tread office floor:
- *   coworking → main shared workspace
+ * Six rooms of the floor:
+ *   coworking → the bullpen, where Sam's body is
  *   office    → David's enclosed office
  *   pantry    → kitchen / pantry
  *   sofa      → lounge / reception
  *   printer   → printer nook
- *   elevator  → lobby / transition
+ *   elevator  → lobby / the only way out
  *
  * Each room carries:
  *   sceneAssetByPeriod — scene art key per time-of-day (resolved in scenes.js)
  *   examineTargets     — clickable hotspots on the SCENE (x,y are fractions 0..1
  *                        of the scene image; clueId optional → grants evidence)
  *   schematic          — {x,y,w,h} block (fractions 0..1) for the redesigned MAP
- *   adjacents          — every room reachable from every other (provisional)
  */
 
 export const ROOM_IDS = ['coworking', 'office', 'pantry', 'sofa', 'printer', 'elevator'];
@@ -33,8 +32,8 @@ export const rooms = [
     sceneAssetByPeriod: { morning: 'coworking-day', dusk: 'coworking-dusk', night: 'coworking-night' },
     adjacents: ALL_ADJACENT.filter((r) => r !== 'coworking'),
     examineTargets: [
-      { id: 'cw-desk', label: 'CLUTTERED DESK', x: 0.32, y: 0.66, flavor: 'A workstation mid-crisis — energy cans, a tangled dock. An unlabeled USB drive juts out, warm to the touch.', clueId: 'usb-drive' },
-      { id: 'cw-whiteboard', label: 'WHITEBOARD', x: 0.70, y: 0.34, flavor: 'Sprint goals, half-erased. The row that read "DECK · FINAL" has been wiped clean. The eraser is still damp.' },
+      { id: 'cw-body', label: 'THE BODY', x: 0.40, y: 0.62, flavor: 'Sam, face-down between the desks. The skin says hours. The bruise on the forearm says they saw it coming — and the phone that never leaves their hand is gone.', clueId: 'the-body' },
+      { id: 'cw-window', label: 'THE WINDOW', x: 0.72, y: 0.34, flavor: 'Rain sheeting down forty floors of glass. The city glitters and doesn’t care. It never does.' },
     ],
     schematic: { x: 0.68, y: 0.54, w: 0.28, h: 0.38 },
   },
@@ -45,8 +44,8 @@ export const rooms = [
     sceneAssetByPeriod: { morning: 'office-day', dusk: 'office-dusk', night: 'office-night' },
     adjacents: ALL_ADJACENT.filter((r) => r !== 'office'),
     examineTargets: [
-      { id: 'of-laptop', label: 'DAVID’S LAPTOP', x: 0.50, y: 0.58, flavor: 'The deck file is open to its version history. Fourteen slides were deleted at 02:14 last night — long after everyone "left."', clueId: 'deleted-slides' },
-      { id: 'of-drawer', label: 'DESK DRAWER', x: 0.24, y: 0.72, flavor: 'Locked. A faint smell of cold espresso clings to the handle.' },
+      { id: 'of-desk', label: 'DAVID’S DESK', x: 0.50, y: 0.58, flavor: 'The bottom drawer doesn’t sit flush. Inside: a burner phone, still warm, and a yellowed clipping — a hit-and-run, years back, never closed.', clueId: 'retrieved-proof' },
+      { id: 'of-photo', label: 'FRAMED PHOTO', x: 0.24, y: 0.72, flavor: 'David and a younger man, arms slung over shoulders on some old road trip. The other face has been scratched out with a key.' },
     ],
     schematic: { x: 0.68, y: 0.08, w: 0.28, h: 0.38 },
   },
@@ -57,8 +56,8 @@ export const rooms = [
     sceneAssetByPeriod: { morning: 'pantry-day', dusk: 'pantry-dusk', night: 'pantry-night' },
     adjacents: ALL_ADJACENT.filter((r) => r !== 'pantry'),
     examineTargets: [
-      { id: 'pn-mug', label: 'ABANDONED MUG', x: 0.42, y: 0.66, flavor: 'A coffee ring, still tacky. Fresh espresso crema. Someone was making a 2 a.m. cup while the rest of the floor slept.', clueId: 'coffee-ring' },
-      { id: 'pn-fridge', label: 'FRIDGE NOTES', x: 0.74, y: 0.42, flavor: 'Passive-aggressive sticky notes about stolen oat milk. Nothing useful here. Probably.' },
+      { id: 'pn-glasses', label: 'TWO GLASSES', x: 0.42, y: 0.60, flavor: 'Two whiskey glasses by the sink, set down around two. One wears Sam’s prints. The other’s been wiped down to nothing — the only clean thing in this room.', clueId: 'two-glasses' },
+      { id: 'pn-sink', label: 'THE SINK', x: 0.74, y: 0.42, flavor: 'Still wet. A dish towel folded too neatly for 2 a.m. Somebody tidied in a hurry and called it calm.' },
     ],
     schematic: { x: 0.36, y: 0.08, w: 0.28, h: 0.38 },
   },
@@ -69,7 +68,7 @@ export const rooms = [
     sceneAssetByPeriod: { morning: 'sofa-day', dusk: 'sofa-dusk', night: 'sofa-night' },
     adjacents: ALL_ADJACENT.filter((r) => r !== 'sofa'),
     examineTargets: [
-      { id: 'sf-cushion', label: 'COUCH CUSHION', x: 0.46, y: 0.70, flavor: 'Shoved deep between the cushions: a crumpled note. "cover for me at standup? owe you one." No signature.', clueId: 'alibi-note' },
+      { id: 'sf-jacket', label: 'PONCHO’S JACKET', x: 0.46, y: 0.62, flavor: 'Poncho’s jacket, thrown over the lounge arm. In the pocket, a crumpled IOU — a lot owed to Sam. Damning, until you notice it’s a month old and torn clean down the middle.', clueId: 'owed-note' },
     ],
     schematic: { x: 0.04, y: 0.08, w: 0.28, h: 0.38 },
   },
@@ -80,7 +79,7 @@ export const rooms = [
     sceneAssetByPeriod: { morning: 'printer', dusk: 'printer', night: 'printer' },
     adjacents: ALL_ADJACENT.filter((r) => r !== 'printer'),
     examineTargets: [
-      { id: 'pr-tray', label: 'SHREDDER TRAY', x: 0.50, y: 0.62, flavor: 'Confetti of a printed deck. Reassemble enough and slide 9 emerges — the kill-shot revenue metric, deliberately destroyed.', clueId: 'shredded-printout' },
+      { id: 'pr-shredder', label: 'THE SHREDDER', x: 0.50, y: 0.62, flavor: 'Fresh confetti in the bin. Patient fingers reassemble it: that same clipping, and a line in Sam’s hand — "last time. then it’s done." Someone disagreed.', clueId: 'shredded-letter' },
     ],
     schematic: { x: 0.36, y: 0.54, w: 0.28, h: 0.38 },
   },
@@ -91,7 +90,7 @@ export const rooms = [
     sceneAssetByPeriod: { morning: 'elevator', dusk: 'elevator', night: 'elevator' },
     adjacents: ALL_ADJACENT.filter((r) => r !== 'elevator'),
     examineTargets: [
-      { id: 'el-badge', label: 'BADGE READER LOG', x: 0.50, y: 0.50, flavor: 'Last night’s access log: one badge in at 02:02, out at 02:31. Badge #D2 — Sam’s. The only soul on this floor.', clueId: 'late-badge' },
+      { id: 'el-badge', label: 'BADGE LOG', x: 0.50, y: 0.50, flavor: 'The reader’s memory: #D2 (Sam) in, never out. And a hole where #D1 — David’s — should be, scrubbed, with a quiet re-entry at 01:55. He told everyone he left at midnight.', clueId: 'scrubbed-badge' },
     ],
     schematic: { x: 0.04, y: 0.54, w: 0.28, h: 0.38 },
   },

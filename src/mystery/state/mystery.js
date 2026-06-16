@@ -35,7 +35,7 @@ const _initial = _loaded ?? {
   examine: null,
   ending: null,
   accusation: { suspectId: null, selectedClueIds: [] },
-  objective: 'Identify who gutted the deck. Sunrise: 06:00.',
+  objective: 'A body on the bullpen floor. Name the killer before first shift — 06:00.',
 };
 
 if (_loaded) {
@@ -91,7 +91,7 @@ export const mapOpenAtom = atom(false);
 
 /** @type {import('jotai').PrimitiveAtom<string>} */
 export const objectiveAtom = atom(
-  _initial.objective ?? 'Identify who gutted the deck. Sunrise: 06:00.',
+  _initial.objective ?? 'A body on the bullpen floor. Name the killer before first shift — 06:00.',
 );
 
 // ---------------------------------------------------------------------------

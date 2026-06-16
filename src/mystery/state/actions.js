@@ -42,7 +42,7 @@ const MAX_ACCUSATION_CLUES = 3;
 // unreachable and the player is dropped onto a dead-end screen.
 const MIN_CLUES_TO_ACCUSE = MAX_ACCUSATION_CLUES;
 
-const DEFAULT_OBJECTIVE = 'Identify who gutted the deck. Sunrise: 06:00.';
+const DEFAULT_OBJECTIVE = 'A body on the bullpen floor. Name the killer before first shift — 06:00.';
 
 const FRESH_STATE = {
   mode: 'COLD_OPEN',

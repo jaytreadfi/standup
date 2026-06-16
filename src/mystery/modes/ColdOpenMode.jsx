@@ -24,8 +24,8 @@ const DAVID_B = dialogue.david.nodes.b.text;
 
 // Terminal preamble — TREAD/OS dispatch framing above the briefing copy.
 const PREAMBLE = [
-  '> TREAD/OS-04 · DISPATCH',
-  '> PRIORITY: BLACK · SUNRISE 06:00',
+  '> TREAD/OS · NIGHT DESK',
+  '> STORM HOLD · FIRST SHIFT 06:00',
   '> OPERATOR: INTERN · UNVERIFIED',
 ];
 
@@ -73,9 +73,9 @@ export default function ColdOpenMode() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.32, delay: 0.28, ease: EASE_QUART }}
           >
-            <div className={styles.kicker}>CASE FILE · 0247</div>
+            <div className={styles.kicker}>NIGHT DESK · CASE 01</div>
             <h1 className={styles.title}>
-              <ScrambleText target="THE DECK IS GONE" duration={520} />
+              <ScrambleText target="SAM IS DEAD" duration={520} />
             </h1>
             <motion.div
               className={styles.underline}
@@ -110,7 +110,7 @@ export default function ColdOpenMode() {
             transition={{ duration: 0.32, delay: 0.85, ease: EASE_QUART }}
           >
             <span className={styles.missionGlyph} aria-hidden="true">▸</span>
-            WALK THE FLOOR. READ WHAT THEY LEFT BEHIND. NAME THEM BEFORE SUNRISE.
+            WALK THE FLOOR. READ WHAT’S LEFT. NAME THE KILLER BEFORE FIRST SHIFT.
           </motion.div>
 
           {/* The single decisive action. */}

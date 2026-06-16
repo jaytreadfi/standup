@@ -72,16 +72,19 @@ export default function RosterPanel() {
         <ul className={styles.list}>
           {characters.map((c) => {
             const room = roomMap[c.id];
-            const status = (roomById[room]?.label ?? '—').toUpperCase();
+            const status = c.dead
+              ? 'DECEASED'
+              : (roomById[room]?.label ?? '—').toUpperCase();
             const raw = suspicion[c.id]?.raw ?? 0;
-            const badge = badgeFor(raw);
-            const active = hereIds.has(c.id);
+            const badge = c.dead ? '——' : badgeFor(raw);
+            const active = !c.dead && hereIds.has(c.id);
 
             return (
               <li
                 key={c.id}
                 className={styles.row}
                 data-active={active ? 'true' : 'false'}
+                data-dead={c.dead ? 'true' : undefined}
               >
                 <span className={styles.slot}>{c.slot}</span>
                 <span className={styles.portraitWrap}>

@@ -15,14 +15,7 @@ import { suspects } from '@/mystery/data/characters';
 import { clueById } from '@/mystery/data/clues';
 import { badgeFor } from '@/mystery/engine/suspicion';
 
-import davidPortrait from '@/assets/portraits/david.png';
-import samPortrait from '@/assets/portraits/sam.png';
-import jayPortrait from '@/assets/portraits/jay.png';
-import peemPortrait from '@/assets/portraits/peem.png';
-import denaPortrait from '@/assets/portraits/dena.png';
-import ponchoPortrait from '@/assets/portraits/poncho.png';
-import chingPortrait from '@/assets/portraits/ching.png';
-import jamiePortrait from '@/assets/portraits/jamie.png';
+import { portraitUrl } from '@/mystery/data/scenes';
 
 import styles from './AccusationMode.module.css';
 
@@ -33,17 +26,6 @@ import styles from './AccusationMode.module.css';
  * Bottom: EVIDENCE — pick exactly three collected clues to enter into the record.
  * Confirm is one-shot, no take-backs; locked until 1 suspect + 3 clues are set.
  */
-
-const PORTRAITS = {
-  david: davidPortrait,
-  sam: samPortrait,
-  jay: jayPortrait,
-  peem: peemPortrait,
-  dena: denaPortrait,
-  poncho: ponchoPortrait,
-  ching: chingPortrait,
-  jamie: jamiePortrait,
-};
 
 const REQUIRED_CLUES = 3;
 
@@ -137,7 +119,7 @@ export default function AccusationMode() {
                     </span>
                     <span className={styles.portraitWrap}>
                       <SpriteFrame
-                        src={PORTRAITS[s.id]}
+                        src={portraitUrl(s.id)}
                         cols={3}
                         rows={3}
                         col={0}
