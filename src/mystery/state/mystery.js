@@ -36,7 +36,7 @@ const _initial = _loaded ?? {
   examine: null,
   ending: null,
   accusation: { suspectId: null, selectedClueIds: [] },
-  objective: 'Yibo’s dead on the bullpen floor. Name the killer before David buries it — the board calls at 09:00 tomorrow.',
+  objective: 'Yibo’s dead on the pantry floor. Name the killer before David buries it. The Great Room opens at dawn and then it’s out of your hands.',
 };
 
 if (_loaded) {
@@ -92,7 +92,7 @@ export const mapOpenAtom = atom(false);
 
 /** @type {import('jotai').PrimitiveAtom<string>} */
 export const objectiveAtom = atom(
-  _initial.objective ?? 'Yibo’s dead on the bullpen floor. Name the killer before David buries it — the board calls at 09:00 tomorrow.',
+  _initial.objective ?? 'Yibo’s dead on the pantry floor. Name the killer before David buries it. The Great Room opens at dawn and then it’s out of your hands.',
 );
 
 /**

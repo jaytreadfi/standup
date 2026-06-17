@@ -44,7 +44,7 @@ const MAX_ACCUSATION_CLUES = 3;
 // unreachable and the player is dropped onto a dead-end screen.
 const MIN_CLUES_TO_ACCUSE = MAX_ACCUSATION_CLUES;
 
-const DEFAULT_OBJECTIVE = 'Yibo’s dead on the bullpen floor. Name the killer before David buries it — the board calls at 09:00 tomorrow.';
+const DEFAULT_OBJECTIVE = 'Yibo’s dead on the pantry floor. Name the killer before David buries it. The Great Room opens at dawn and then it’s out of your hands.';
 
 const FRESH_STATE = {
   mode: 'COLD_OPEN',

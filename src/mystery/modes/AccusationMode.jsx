@@ -20,7 +20,7 @@ import styles from './AccusationMode.module.css';
 /**
  * AccusationMode — the "name them" screen (modeAtom === 'ACCUSATION').
  *
- * Top: SUSPECT BOARD — pick exactly one suspect (no guilt meter; you decide).
+ * Top: SUSPECTS — pick exactly one suspect (no guilt meter; you decide).
  * Bottom: EVIDENCE — pick exactly three collected clues to enter into the record.
  * Confirm is one-shot, no take-backs; locked until 1 suspect + 3 clues are set.
  */
@@ -65,11 +65,11 @@ export default function AccusationMode() {
             </p>
           </header>
 
-          {/* ---------- SUSPECT BOARD ---------- */}
-          <section className={styles.section} aria-label="Suspect board">
+          {/* ---------- SUSPECTS ---------- */}
+          <section className={styles.section} aria-label="Suspects">
             <div className={styles.sectionLabel}>
               <span className={styles.sectionGlyph} aria-hidden="true">▸</span>
-              SUSPECT BOARD
+              SUSPECTS
               <span className={styles.sectionHint}>SELECT ONE</span>
             </div>
 

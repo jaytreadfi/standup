@@ -11,11 +11,11 @@ import { portraitUrl } from '@/mystery/data/scenes';
 import styles from './SuspectsOverlay.module.css';
 
 /**
- * SuspectsOverlay — the suspect board.
+ * SuspectsOverlay — the suspects panel.
  * Mounted by the lead when overlayAtom === 'SUSPECTS'.
  *
  * A plain lineup of the people on the floor — NO guilt meter, no ranking, no
- * suspicion score. The board doesn't tell you who did it; you weigh the
+ * suspicion score. The panel doesn't tell you who did it; you weigh the
  * evidence yourself (the case file, F2) and decide. A prominent accuse button
  * at the bottom calls actions.beginAccusation().
  */
@@ -41,7 +41,7 @@ export default function SuspectsOverlay() {
       className={styles.scrim}
       role="dialog"
       aria-modal="true"
-      aria-label="Suspect board"
+      aria-label="Suspects"
       onClick={() => actions.closeOverlay()}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -58,7 +58,7 @@ export default function SuspectsOverlay() {
         transition={{ duration: 0.2, ease: [0.76, 0, 0.24, 1] }}
       >
         <TerminalChrome
-          label="Suspect Board"
+          label="Suspects"
           labelPosition="tl"
         >
           <div className={styles.body}>
@@ -66,14 +66,14 @@ export default function SuspectsOverlay() {
               type="button"
               className={styles.close}
               onClick={() => actions.closeOverlay()}
-              aria-label="Close suspect board"
+              aria-label="Close suspects"
             >
               ESC
             </button>
 
             <p className={styles.note}>
-              Everyone still on the floor. The board won’t name them for you —
-              weigh the evidence and decide.
+              Everyone still on the floor. This panel won’t name them for you.
+              Weigh the evidence and decide.
             </p>
 
             <div className={styles.grid}>

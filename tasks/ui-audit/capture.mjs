@@ -123,7 +123,7 @@ async function run() {
 
     // ---- Enter the field ----
     await safe('begin-shift', async () => {
-      const begin = page.getByRole('button', { name: /begin shift/i }).first();
+      const begin = page.getByRole('button', { name: /begin shift|walk the floor/i }).first();
       if (await begin.count()) await begin.click({ timeout: 2000 });
       await wait(700);
     });

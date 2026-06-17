@@ -16,7 +16,7 @@ const EASE_QUART = [0.76, 0, 0.24, 1];
 
 const BOOTLINES = [
   '> NODE TREAD/OS-04 ONLINE',
-  '> FLOOR 40 · 09:00 · WORKDAY',
+  '> FLOOR 40 · 03:10 · NIGHT',
   '> AWAITING OPERATOR',
 ];
 

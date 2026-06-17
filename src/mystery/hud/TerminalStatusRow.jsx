@@ -5,7 +5,7 @@ import styles from './TerminalStatusRow.module.css';
 /**
  * TerminalStatusRow — the top banner, pared down to the one thing that matters:
  * the current objective. All the old terminal chrome (brand, case/scene/floor
- * counters, live clock, board-call deadline) was redundant clutter and has been
+ * counters, live clock, dawn deadline) was redundant clutter and has been
  * removed; the clock now lives prominently on the scene itself.
  */
 export default function TerminalStatusRow() {
