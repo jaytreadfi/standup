@@ -103,7 +103,7 @@ Zero em/en dashes in any player-facing string. Curly apostrophes throughout (mat
 
 **Preamble (TREAD/OS dispatch frame, 4 lines):**
 ```
-> TREAD/OS · FLOOR 40 · 03:10
+> TREAD/OS · FLOOR 25 · 03:10
 > COFOUNDER DOWN · PANTRY · KEEP IT QUIET
 > THE GREAT ROOM OPENS AT DAWN
 > OPERATOR: INTERN · UNVERIFIED
@@ -118,7 +118,7 @@ The cutscene body is the section-2 script above (rendered from a self-contained 
 
 ```
 > NODE TREAD/OS-04 ONLINE
-> FLOOR 40 · 03:10 · NIGHT
+> FLOOR 25 · 03:10 · NIGHT
 > AWAITING OPERATOR
 ```
 
@@ -203,7 +203,7 @@ The cutscene body is the section-2 script above (rendered from a self-contained 
 - **`cw-aftermath`** (replaces `cw-body`, NO clueId) · x:0.40, y:0.62 · label `THE AFTERMATH`
 > The leftovers of a good night gone cold. CentralWorld takeout going hard in the boxes, the big screen still frozen on the Japan vs Spain final, paper cups everywhere. A few hours ago this was the warmest room in Bangkok. Now it's the room where David sat everyone down and said the word gone.
 - **`cw-window`** · x:0.72, y:0.34 · label `THE WINDOW`
-> Black glass forty floors up, the CentralWorld signage smeared to neon soup down below. The city is still dark. When that sky goes grey the building wakes up, the commons unlocks, and the other members and offices start coming in like nothing happened. The city glitters and doesn't care. It never does.
+> Black glass twenty-five floors up, the CentralWorld signage smeared to neon soup down below. The city is still dark. When that sky goes grey the building wakes up, the commons unlocks, and the other members and offices start coming in like nothing happened. The city glitters and doesn't care. It never does.
 
 ### `office` → label `THE OFFICE`, short `OFC`
 - **`of-desk`** · x:0.50, y:0.58 · clueId `retrieved-proof` · label `DAVID'S SPOT`
@@ -237,7 +237,7 @@ The cutscene body is the section-2 script above (rendered from a self-contained 
 > You lay it all down before the doors open. The scrubbed badge. The wiped glass. Yibo's laptop back in his drawer with the real numbers glowing on it. The warmth drains out of his face. He'll have lawyers by noon, the raise is dead, and you're off the team by Monday. But the report says David. Yibo gets a name on the thing that killed him. Some nights, ugly is the best you get.
 
 **B** — title `NO PROOF` · verdict `RIGHT, AND ALONE` · tone `warn`
-> You point at David and you're right and you both know it. But it's a first-week intern's word against the man who signs the checks, and the sky is already going grey. You brought a hunch to a knife fight. He walks you to the lift himself, easy and unhurried, holds the door. The truth rides down forty floors with you and gets out at the lobby, alone.
+> You point at David and you're right and you both know it. But it's a first-week intern's word against the man who signs the checks, and the sky is already going grey. You brought a hunch to a knife fight. He walks you to the lift himself, easy and unhurried, holds the door. The truth rides down twenty-five floors with you and gets out at the lobby, alone.
 
 **C** — title `STEERED WRONG` · verdict `THE KILLER WALKS` · tone `danger`
 > You point exactly where you were told to point. Poncho gets walked out of the building he practically lived in, the floor exhales, and David rests a heavy, grateful hand on your shoulder. The raise closes Friday. Somewhere a laptop full of the truth gets wiped and dropped off a Chao Phraya bridge. You closed the case on the wrong person, and he made sure you'd be the one to do it. He keeps the company. You keep the badge.

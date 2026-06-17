@@ -23,7 +23,7 @@ const EASE_QUART = [0.76, 0, 0.24, 1];
 
 // Terminal preamble — TREAD/OS dispatch framing above the cutscene.
 const PREAMBLE = [
-  '> TREAD/OS · FLOOR 40 · 03:10',
+  '> TREAD/OS · FLOOR 25 · 03:10',
   '> COFOUNDER DOWN · PANTRY · KEEP IT QUIET',
   '> THE GREAT ROOM OPENS AT DAWN',
   '> OPERATOR: INTERN · UNVERIFIED',

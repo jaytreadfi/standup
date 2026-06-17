@@ -25,7 +25,7 @@ export const endings = {
     id: 'B',
     title: 'NO PROOF',
     verdict: 'RIGHT, AND ALONE',
-    body: 'You point at David and you’re right and you both know it. But it’s a first-week intern’s word against the man who signs the checks, and the sky is already going grey. You brought a hunch to a knife fight. He walks you to the lift himself, easy and unhurried, holds the door. The truth rides down forty floors with you and gets out at the lobby, alone.',
+    body: 'You point at David and you’re right and you both know it. But it’s a first-week intern’s word against the man who signs the checks, and the sky is already going grey. You brought a hunch to a knife fight. He walks you to the lift himself, easy and unhurried, holds the door. The truth rides down twenty-five floors with you and gets out at the lobby, alone.',
     tone: 'warn',
   },
   C: {

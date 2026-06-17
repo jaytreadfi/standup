@@ -1,6 +1,6 @@
 # Case Bible — "LAST ONE OUT" (Tread office murder)
 
-A neo-noir whodunit set at **Tread**, a Bangkok startup on the 40th floor by CentralWorld.
+A neo-noir whodunit set at **Tread**, a Bangkok startup on the 25th floor by CentralWorld.
 Grounded + in-jokes: the team eats lunch at CentralWorld, does a weekly activity night
 (go-karts, padel, karaoke, bowling), several live in the condo towers next door, and only
 Sam and Poncho drive. The office is the setting; the murder is about the company.
