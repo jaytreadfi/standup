@@ -33,10 +33,7 @@ export const rooms = [
     short: 'CMN',
     sceneAssetByPeriod: { morning: 'coworking-day', dusk: 'coworking-dusk', night: 'coworking-night' },
     adjacents: ALL_ADJACENT.filter((r) => r !== 'coworking'),
-    examineTargets: [
-      { id: 'cw-aftermath', label: 'THE AFTERMATH', x: 0.40, y: 0.62, flavor: 'The leftovers of a good night gone cold. CentralWorld takeout going hard in the boxes, the big screen still frozen on the Japan vs Spain final, paper cups everywhere. A few hours ago this was the warmest room in Bangkok. Now it’s the room where David sat everyone down and said the word gone.' },
-      { id: 'cw-window', label: 'THE WINDOW', x: 0.72, y: 0.34, flavor: 'Black glass forty floors up, the CentralWorld signage smeared to neon soup down below. The city is still dark. When that sky goes grey the building wakes up, the commons unlocks, and the other members and offices start coming in like nothing happened. The city glitters and doesn’t care. It never does.' },
-    ],
+    examineTargets: [],
     schematic: { x: 0.68, y: 0.54, w: 0.28, h: 0.38 },
   },
   {
@@ -60,7 +57,6 @@ export const rooms = [
     examineTargets: [
       { id: 'pn-body', label: 'THE BODY', x: 0.30, y: 0.66, flavor: 'Yibo on the pantry floor by the counter, where two glasses still sit. The skin says hours. The gash above his temple lines up with the hard counter corner, almost too well. His laptop and his phone, the things glued to his hands, are gone. Good whiskey on his breath. He didn’t drink alone, and nobody tidies up after a man who just slips.', clueId: 'the-body', image: 'the-body' },
       { id: 'pn-glasses', label: 'TWO GLASSES', x: 0.58, y: 0.52, flavor: 'Two whiskey glasses by the sink, set down around two, poured from Yibo’s airport-gift bottle that nobody can find now. One wears Yibo’s prints. The other has been wiped down to nothing, the only clean thing in this room. This is where the good night quietly ended.', clueId: 'two-glasses', image: 'two-glasses' },
-      { id: 'pn-sink', label: 'THE SINK', x: 0.80, y: 0.40, flavor: 'Still wet. A dish towel folded too neatly for two in the morning. Somebody tidied in a hurry and called it calm.' },
     ],
     schematic: { x: 0.36, y: 0.08, w: 0.28, h: 0.38 },
   },

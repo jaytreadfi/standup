@@ -298,7 +298,9 @@ export default function ExamineOverlay() {
                     </div>
                   )
                 ) : (
-                  <div className={styles.noEvidence}>NO EVIDENCE</div>
+                  <div className={styles.noEvidence}>
+                    {target.image ? 'BACKSTORY' : 'NOTHING OF NOTE'}
+                  </div>
                 )}
               </div>
             </div>

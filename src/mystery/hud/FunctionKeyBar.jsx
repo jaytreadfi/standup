@@ -94,6 +94,7 @@ export default function FunctionKeyBar() {
               aria-keyshortcuts={k.key}
               aria-pressed={k.active ? 'true' : undefined}
               aria-label={k.label}
+              title={k.key === 'F4' && !k.enabled ? `Log ${MIN_CLUES_TO_ACCUSE} clues before you can accuse` : undefined}
               onClick={() => trigger(k, 'mouse')}
             >
               <span aria-hidden="true" className={styles.bracket}>[</span>

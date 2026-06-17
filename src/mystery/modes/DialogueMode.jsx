@@ -20,9 +20,13 @@ const EASE_QUART = [0.76, 0, 0.24, 1];
 
 // Quick typewriter reveal. Returns the visible slice + a `done` flag and a
 // `skip()` that snaps to the full string. Respects prefers-reduced-motion.
-function useTypewriter(text, speed = 14) {
+function useTypewriter(text, speed = 12) {
   const [count, setCount] = useState(0);
   const rafRef = useRef(null);
+  // skip() flips this so the in-flight rAF loop stops re-deriving count from
+  // elapsed time on its next tick. Without it, skip()'s setCount(full) is
+  // overwritten one frame later and the skip is a no-op (choices stay disabled).
+  const skippedRef = useRef(false);
 
   const reduced = useMemo(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return false;
@@ -31,6 +35,7 @@ function useTypewriter(text, speed = 14) {
 
   useEffect(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    skippedRef.current = false;
     if (!text) {
       setCount(0);
       return undefined;
@@ -42,6 +47,7 @@ function useTypewriter(text, speed = 14) {
     setCount(0);
     const start = performance.now();
     const loop = (now) => {
+      if (skippedRef.current) return;
       const elapsed = now - start;
       const next = Math.min(text.length, Math.floor(elapsed / speed));
       setCount(next);
@@ -56,7 +62,11 @@ function useTypewriter(text, speed = 14) {
   }, [text, speed, reduced]);
 
   const done = count >= (text?.length ?? 0);
-  const skip = () => setCount(text?.length ?? 0);
+  const skip = () => {
+    skippedRef.current = true;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    setCount(text?.length ?? 0);
+  };
 
   return { visible: text ? text.slice(0, count) : '', done, skip };
 }
