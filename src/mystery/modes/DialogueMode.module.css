@@ -131,11 +131,13 @@
   color: var(--color-text);
 }
 
+/* Muted to match the finalized roster rail (roles read quiet there too); the
+ * single orange mark in this panel is the accent left-edge. */
 .role {
   font-size: var(--font-xs);
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: var(--color-accent);
+  color: var(--color-text-muted);
 }
 
 /* ---------- Conversation column ---------- */
@@ -148,31 +150,22 @@
   align-self: end;
 }
 
-/* Framed dialogue box. */
+/* Framed dialogue box. The accent left-edge ties the line to the speaker panel,
+ * so the name lives in ONE place (the portrait identity) — no in-bubble tag. */
 .dialogueBox {
   position: relative;
-  padding: var(--space-6) var(--space-6) var(--space-5);
+  padding: var(--space-6);
   border: 1px solid var(--color-border-strong);
+  border-left: 2px solid var(--color-accent);
   background:
     linear-gradient(180deg, rgba(20, 20, 20, 0.96), rgba(15, 15, 15, 0.96));
-  min-height: 132px;
+  min-height: 128px;
+  display: flex;
+  align-items: center;
 }
 
 .dialogueBox[data-skippable] {
   cursor: pointer;
-}
-
-.speakerTag {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: var(--font-xs);
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-  padding: 2px var(--space-2);
-  border: 1px solid var(--color-accent-dim);
-  margin-bottom: var(--space-3);
 }
 
 .text {
@@ -223,25 +216,26 @@
 .choice {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-4);
   width: 100%;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border);
+  padding: var(--space-4);
+  /* Stronger resting border + a quiet surface so every row reads as a
+   * clickable target at rest — not just the focused one. */
+  border: 1px solid var(--color-border-strong);
+  border-left: 2px solid var(--color-border-strong);
   background: var(--color-surface);
   font-family: var(--font-mono);
   text-align: left;
   cursor: pointer;
   transition:
     border-color var(--dur-fast) var(--ease-quart),
-    background-color var(--dur-fast) var(--ease-quart),
-    transform var(--dur-fast) var(--ease-quart);
+    background-color var(--dur-fast) var(--ease-quart);
 }
 
 .choice:hover,
 .choice:focus-visible {
   border-color: var(--color-accent);
   background: var(--color-surface-2);
-  transform: translateX(3px);
   outline: none;
 }
 

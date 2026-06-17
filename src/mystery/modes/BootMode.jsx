@@ -23,11 +23,7 @@ const BOOTLINES = [
 export default function BootMode() {
   return (
     <div className={styles.root}>
-      <TerminalChrome sceneId={0} sceneTotal={5} label="Boot" ghostNumber="00" bracketsStaggered>
-        {/* Decorative ghost glyph — anchored to corner so it bleeds in at the
-         * edge rather than dominating center. Mirrors GhostNumber motif. */}
-        <div className={styles.ghostGlyph} aria-hidden="true">0</div>
-
+      <TerminalChrome ghostNumber="00" bracketsStaggered hideLabel>
         {/* Four absolute-corner accent ticks that pulse on once during boot. */}
         <span className={`${styles.tick} ${styles.tickTL}`} aria-hidden="true" />
         <span className={`${styles.tick} ${styles.tickTR}`} aria-hidden="true" />

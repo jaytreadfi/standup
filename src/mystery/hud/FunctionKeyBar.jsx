@@ -17,9 +17,7 @@ export default function FunctionKeyBar() {
   const collectedClues = useAtomValue(collectedCluesAtom);
 
   const [flashing, setFlashing] = useState(null);
-  const [savePulse, setSavePulse] = useState(false);
   const flashTimerRef = useRef(null);
-  const savePulseTimerRef = useRef(null);
 
   // Only the exploration surface accepts these actions.
   const inField = mode === 'FREE_ROAM';
@@ -27,22 +25,22 @@ export default function FunctionKeyBar() {
   // mirrors the beginAccusation() guard so the key visibly reads as locked.
   const canAccuse = inField && collectedClues.length >= MIN_CLUES_TO_ACCUSE;
 
+  // The bar shows only the three primary verbs. MAP lives on the scene itself and
+  // SAVE was removed (no save in this build). Function-key hints are intentionally
+  // not rendered, but the shortcuts stay wired (F1 map / F2 evidence / F3 suspects
+  // / F4 accuse) for keyboard users and testing. `bar:false` = keyboard-only.
   const KEYS = [
-    { key: 'F1', label: 'Map', enabled: inField, active: mapOpen,
+    { key: 'F1', label: 'Map', bar: false, enabled: inField, active: mapOpen,
       run: () => (mapOpen ? actions.closeMap() : actions.openMap()) },
-    { key: 'F2', label: 'Evidence', enabled: inField, active: overlay === 'NOTEBOOK',
+    { key: 'F2', label: 'Evidence', bar: true, enabled: inField, active: overlay === 'NOTEBOOK',
       run: () => (overlay === 'NOTEBOOK' ? actions.closeOverlay() : actions.openOverlay('NOTEBOOK')) },
-    { key: 'F3', label: 'Suspects', enabled: inField, active: overlay === 'SUSPECTS',
+    { key: 'F3', label: 'Suspects', bar: true, enabled: inField, active: overlay === 'SUSPECTS',
       run: () => (overlay === 'SUSPECTS' ? actions.closeOverlay() : actions.openOverlay('SUSPECTS')) },
-    { key: 'F4', label: 'Accuse', enabled: canAccuse, active: false,
+    { key: 'F4', label: 'Accuse', bar: true, enabled: canAccuse, active: false,
       run: () => actions.beginAccusation() },
-    { key: 'F5', label: 'Save', enabled: true, active: savePulse,
-      run: () => {
-        if (savePulseTimerRef.current) clearTimeout(savePulseTimerRef.current);
-        setSavePulse(true);
-        savePulseTimerRef.current = setTimeout(() => setSavePulse(false), 600);
-      } },
   ];
+
+  const barKeys = KEYS.filter((k) => k.bar);
 
   const flashKey = useCallback((key) => {
     if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
@@ -81,13 +79,12 @@ export default function FunctionKeyBar() {
 
   useEffect(() => () => {
     if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
-    if (savePulseTimerRef.current) clearTimeout(savePulseTimerRef.current);
   }, []);
 
   return (
     <nav className={styles.row} aria-label="Primary actions">
       <ul className={styles.list}>
-        {KEYS.map((k) => (
+        {barKeys.map((k) => (
           <li key={k.key} className={styles.item}>
             <button
               type="button"
@@ -96,15 +93,12 @@ export default function FunctionKeyBar() {
               disabled={!k.enabled}
               aria-keyshortcuts={k.key}
               aria-pressed={k.active ? 'true' : undefined}
-              aria-label={`${k.label} (${k.key})`}
+              aria-label={k.label}
               onClick={() => trigger(k, 'mouse')}
             >
               <span aria-hidden="true" className={styles.bracket}>[</span>
-              <span className={styles.label}>
-                {k.key === 'F5' && savePulse ? 'SAVED' : k.label.toUpperCase()}
-              </span>
+              <span className={styles.label}>{k.label.toUpperCase()}</span>
               <span aria-hidden="true" className={styles.bracket}>]</span>
-              <span aria-hidden="true" className={styles.shortcut}>{k.key}</span>
             </button>
           </li>
         ))}

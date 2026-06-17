@@ -31,17 +31,17 @@
   text-align: center;
 }
 
-/* ---------- Case stamp ---------- */
+/* ---------- Case stamp (eyebrow) ---------- */
 .stamp {
   font-family: var(--font-mono);
   font-size: var(--font-xs);
   font-weight: var(--weight-bold);
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--tone);
+  color: var(--color-text-muted);
 }
 
-/* ---------- Title ---------- */
+/* ---------- Title — the single toned hero ---------- */
 .title {
   margin: 0;
   font-family: var(--font-mono);
@@ -50,7 +50,13 @@
   letter-spacing: 0.05em;
   line-height: var(--line-tight);
   text-transform: uppercase;
-  color: var(--color-text);
+  color: var(--tone);
+}
+
+/* ScrambleText hardcodes its own accent color on .root; override so the title
+ * carries the verdict's tone (success/warn/danger), keeping it the single hero. */
+.titleText {
+  color: var(--tone) !important;
 }
 
 /* ---------- Verdict ---------- */
@@ -63,7 +69,7 @@
 
 .rule {
   height: 2px;
-  background: var(--tone);
+  background: var(--color-border-strong);
 }
 
 .verdict {
@@ -72,18 +78,18 @@
   font-weight: var(--weight-bold);
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--tone);
+  color: var(--color-text-dim);
 }
 
-/* ---------- Body ---------- */
+/* ---------- Body — resolution prose, mixed case, readable ---------- */
 .body {
-  margin: 0;
-  max-width: 620px;
+  margin: var(--space-2) 0 0;
+  max-width: 60ch;
   font-family: var(--font-mono);
   font-size: var(--font-base);
   line-height: var(--line-base);
   letter-spacing: var(--track);
-  color: var(--color-text-dim);
+  color: var(--color-text);
 }
 
 /* ---------- Restart ---------- */

@@ -51,13 +51,12 @@ export default function AccusationMode() {
   return (
     <div className={styles.root}>
       <TerminalChrome
-        sceneId={4}
-        sceneTotal={5}
         label="Accusation"
         ghostNumber="!!"
         bracketsStaggered
       >
         <div className={styles.scroll}>
+          <div className={styles.inner}>
           <header className={styles.head}>
             <h1 className={styles.title}>NAME THE KILLER</h1>
             <p className={styles.warn}>
@@ -89,9 +88,6 @@ export default function AccusationMode() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.22, delay: i * 0.04, ease: EASE_QUART }}
                   >
-                    <span className={styles.cardTop}>
-                      <span className={styles.slot}>{s.slot}</span>
-                    </span>
                     <span className={styles.portraitWrap}>
                       <SpriteFrame
                         src={portraitUrl(s.id)}
@@ -186,6 +182,7 @@ export default function AccusationMode() {
               [ CONFIRM ACCUSATION ]
             </button>
           </footer>
+          </div>
         </div>
       </TerminalChrome>
     </div>

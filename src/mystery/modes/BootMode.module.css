@@ -63,24 +63,6 @@
   white-space: nowrap;
 }
 
-/* Decorative ghost glyph — huge faded accent character pinned to the
- * top-right corner so it bleeds out of frame. Matches GhostNumber motif. */
-.ghostGlyph {
-  position: absolute;
-  top: -120px;
-  right: -80px;
-  font-family: var(--font-mono);
-  font-size: 480px;
-  line-height: 0.8;
-  font-weight: 700;
-  color: var(--color-accent);
-  opacity: 0.04;
-  pointer-events: none;
-  user-select: none;
-  white-space: nowrap;
-  z-index: 0;
-}
-
 /* Corner ticks — 4 tiny accent dots 10px in from each absolute corner.
  * Pulse on once during the boot beat (0 → 1 → 0 across 300ms). */
 .tick {

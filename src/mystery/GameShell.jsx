@@ -27,7 +27,6 @@ import SuspectsOverlay from '@/mystery/overlays/SuspectsOverlay.jsx';
 
 import TerminalStatusRow from '@/mystery/hud/TerminalStatusRow.jsx';
 import FunctionKeyBar from '@/mystery/hud/FunctionKeyBar.jsx';
-import SystemStatusRow from '@/mystery/hud/SystemStatusRow.jsx';
 import RosterPanel from '@/mystery/hud/RosterPanel.jsx';
 import RecentEvidencePanel from '@/mystery/hud/RecentEvidencePanel.jsx';
 
@@ -156,7 +155,6 @@ export default function GameShell() {
           </aside>
         </div>
         <FunctionKeyBar />
-        <SystemStatusRow />
       </div>
 
       {/* Overlay + map layer — rendered as a SIBLING of .shell so the

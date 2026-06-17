@@ -2,10 +2,10 @@
   position: fixed;
   inset: 0;
   display: grid;
-  grid-template-rows: auto 1fr auto auto;
+  grid-template-rows: auto 1fr auto;
   grid-template-columns: 1fr;
   padding: var(--gutter-shell);
-  gap: var(--space-3);
+  gap: var(--space-4);
   background: var(--color-canvas);
   color: var(--color-text);
   overflow: hidden;

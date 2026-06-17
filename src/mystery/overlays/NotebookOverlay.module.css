@@ -34,19 +34,20 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-  padding: var(--space-8) var(--space-6) var(--space-6);
+  gap: var(--space-4);
+  /* extra top room clears the "CASE FILE" section label + its accent rule */
+  padding: var(--space-12) var(--space-8) var(--space-8);
   max-height: min(78vh, 640px);
   overflow: auto;
   font-family: var(--font-mono);
   letter-spacing: var(--track);
 }
 
-/* ---------- Close ---------- */
+/* ---------- Close (consistent ESC control, top-right) ---------- */
 .close {
   position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
+  top: var(--space-6);
+  right: var(--space-6);
   appearance: none;
   background: transparent;
   border: 1px solid var(--color-border-strong);
@@ -54,7 +55,7 @@
   font-family: var(--font-mono);
   font-size: var(--font-xs);
   font-weight: var(--weight-bold);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   padding: var(--space-2) var(--space-3);
   cursor: pointer;
@@ -70,83 +71,36 @@
   background: rgba(245, 124, 58, 0.06);
 }
 
-/* ---------- Objective ---------- */
-.objective {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--color-divider, var(--color-border));
-}
-
-.objectiveLabel {
-  color: var(--color-accent);
-  font-size: var(--font-xs);
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.objectiveText {
-  margin: 0;
-  color: var(--color-text);
-  font-size: var(--font-sm);
-  line-height: var(--line-base);
-}
-
-/* ---------- Ledger header ---------- */
+/* ---------- Ledger header (eyebrow + count) ---------- */
 .ledgerHead {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
+  gap: var(--space-3);
+  /* keep clear of the close control */
+  padding-right: var(--space-12);
 }
 
 .ledgerTitle {
-  color: var(--color-text-dim);
+  color: var(--color-text-muted);
   font-size: var(--font-xs);
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.16em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
 .ledgerCount {
   color: var(--color-accent);
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   font-weight: var(--weight-bold);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.08em;
 }
 
-/* ---------- Empty state ---------- */
+/* ---------- Empty state (compact, quiet) ---------- */
 .empty {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-12) 0;
-  align-items: center;
-  text-align: center;
-}
-
-.emptyPrompt {
+  margin: 0;
   color: var(--color-text-muted);
   font-size: var(--font-sm);
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.emptyRule {
-  color: var(--color-border-strong);
-  letter-spacing: 0.4em;
-  font-size: var(--font-xs);
-  user-select: none;
-}
-
-.emptySub {
-  color: var(--color-text-muted);
-  font-size: var(--font-xs);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  line-height: var(--line-base);
 }
 
 /* ---------- Evidence list ---------- */
@@ -192,30 +146,6 @@
   text-transform: uppercase;
   flex: 1 1 auto;
   min-width: 0;
-}
-
-/* ---------- Weight tag (color by weight) ---------- */
-.weightTag {
-  flex: 0 0 auto;
-  font-size: 9px;
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 2px var(--space-2);
-  border: 1px solid currentColor;
-  color: var(--color-text-muted);
-}
-
-.weightTag[data-weight='weak'] {
-  color: var(--color-text-dim);
-}
-
-.weightTag[data-weight='core'] {
-  color: var(--color-warn);
-}
-
-.weightTag[data-weight='heavy'] {
-  color: var(--color-danger);
 }
 
 .entryDesc {

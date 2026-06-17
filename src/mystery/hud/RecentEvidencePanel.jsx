@@ -11,29 +11,10 @@ export default function RecentEvidencePanel() {
 
   return (
     <div className={styles.root}>
-      <TerminalChrome
-        sceneId={3}
-        sceneTotal={5}
-        label="Recent Evidence"
-        ghostNumber="EV"
-        labelPosition="tl"
-      >
+      <TerminalChrome label="Recent Evidence" labelPosition="tl">
         <div className={styles.body}>
           {recent.length === 0 && (
-            <div className={styles.empty}>
-              <div className={styles.emptyHead}>
-                <span className={styles.emptyPrompt}>&gt; AWAITING DATA</span>
-                <span className={styles.caret} aria-hidden="true">
-                  &#9646;
-                </span>
-              </div>
-              <div className={styles.emptyRule} aria-hidden="true">
-                &#9472; &middot; &#9472; &middot; &#9472;
-              </div>
-              <div className={styles.emptySub}>
-                Tag a hotspot to log it as evidence.
-              </div>
-            </div>
+            <p className={styles.empty}>Tag a hotspot to log evidence.</p>
           )}
           {recent.length > 0 && (
             <div className={styles.list}>

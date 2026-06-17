@@ -206,12 +206,11 @@ export default function DialogueMode() {
             aria-label={!done ? 'Reveal full line' : undefined}
           >
             <CornerBrackets />
-            <span className={styles.speakerTag}>{name}</span>
             <p className={styles.text}>
               {visible}
               {!done && <span className={styles.caret} aria-hidden="true" />}
             </p>
-            {!done && <span className={styles.skipHint}>CLICK OR PRESS ENTER TO SKIP</span>}
+            {!done && <span className={styles.skipHint}>ENTER ▸ SKIP</span>}
           </div>
 
           <div className={styles.choices}>

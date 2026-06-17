@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import TerminalChrome from '@/components/chrome/TerminalChrome';
 import { useGameActions } from '@/mystery/state/actions';
 import { useDialogFocus } from './useDialogFocus';
-import { collectedCluesAtom, objectiveAtom } from '@/mystery/state/mystery';
+import { collectedCluesAtom } from '@/mystery/state/mystery';
 import { clueById } from '@/mystery/data/clues';
 import { roomById } from '@/mystery/data/rooms';
 import { formatClock } from '@/mystery/engine/clock';
@@ -19,7 +19,6 @@ import styles from './NotebookOverlay.module.css';
 export default function NotebookOverlay() {
   const actions = useGameActions();
   const panelRef = useDialogFocus();
-  const objective = useAtomValue(objectiveAtom);
   const collected = useAtomValue(collectedCluesAtom);
 
   // Close on Escape, for parity with the Map/Examine overlays.
@@ -60,13 +59,7 @@ export default function NotebookOverlay() {
         exit={{ opacity: 0, y: 8 }}
         transition={{ duration: 0.2, ease: [0.76, 0, 0.24, 1] }}
       >
-        <TerminalChrome
-          sceneId={1}
-          sceneTotal={1}
-          label="Case File"
-          ghostNumber="CF"
-          labelPosition="tl"
-        >
+        <TerminalChrome label="Case File" labelPosition="tl">
           <div className={styles.body}>
             <button
               type="button"
@@ -74,31 +67,20 @@ export default function NotebookOverlay() {
               onClick={() => actions.closeOverlay()}
               aria-label="Close case file"
             >
-              [ X ] CLOSE
+              ESC
             </button>
 
-            <div className={styles.objective}>
-              <span className={styles.objectiveLabel}>&gt; OBJECTIVE</span>
-              <p className={styles.objectiveText}>{objective}</p>
-            </div>
-
             <div className={styles.ledgerHead}>
-              <span className={styles.ledgerTitle}>EVIDENCE LOGGED</span>
+              <span className={styles.ledgerTitle}>Evidence logged</span>
               <span className={styles.ledgerCount}>
                 {String(entries.length).padStart(2, '0')}
               </span>
             </div>
 
             {entries.length === 0 ? (
-              <div className={styles.empty}>
-                <span className={styles.emptyPrompt}>&gt; NO EVIDENCE LOGGED YET</span>
-                <span className={styles.emptyRule} aria-hidden="true">
-                  &#9472; &middot; &#9472; &middot; &#9472;
-                </span>
-                <span className={styles.emptySub}>
-                  Examine hotspots across the floor to log evidence.
-                </span>
-              </div>
+              <p className={styles.empty}>
+                No evidence yet — examine hotspots across the floor to log it.
+              </p>
             ) : (
               <ul className={styles.list}>
                 {entries.map((entry, idx) => {

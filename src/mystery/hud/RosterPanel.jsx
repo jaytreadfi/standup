@@ -45,13 +45,7 @@ export default function RosterPanel() {
 
   return (
     <div className={styles.root}>
-      <TerminalChrome
-        sceneId={2}
-        sceneTotal={5}
-        label="Roster"
-        ghostNumber="08"
-        labelPosition="tl"
-      >
+      <TerminalChrome label="Roster" labelPosition="tl">
         <ul className={styles.list}>
           {characters.map((c) => {
             const room = roomMap[c.id];
@@ -67,7 +61,6 @@ export default function RosterPanel() {
                 data-active={active ? 'true' : 'false'}
                 data-dead={c.dead ? 'true' : undefined}
               >
-                <span className={styles.slot}>{c.slot}</span>
                 <span className={styles.portraitWrap}>
                   <SpriteFrame
                     src={portraitUrl(c.id)}

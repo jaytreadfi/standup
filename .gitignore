@@ -5,3 +5,6 @@ dist
 coverage
 .vite
 .vercel
+
+# UI-audit screenshot artifacts (keep capture.mjs + DESIGN-LANGUAGE.md, ignore PNGs)
+tasks/ui-audit/*/

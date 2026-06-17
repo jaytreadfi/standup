@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAtomValue } from 'jotai';
 
-import SectionLabel from '@/components/chrome/SectionLabel';
 import SpriteFrame from '@/components/chrome/SpriteFrame';
 import { useGameActions } from '@/mystery/state/actions';
 import {
@@ -90,8 +89,16 @@ export default function FreeRoamMode() {
       {/* ---- Vignette / scrim so HUD text stays legible ---- */}
       <div className={styles.scrim} aria-hidden="true" />
 
-      {/* ---- Corner room tag (SectionLabel-style) ---- */}
-      <SectionLabel index={1} total={5} label={label} position="tl" />
+      {/* ---- Prominent scene clock, top-right ---- */}
+      <div
+        className={styles.sceneClock}
+        data-period={period}
+        role="timer"
+        aria-label={`Time ${formatClock(clockMinutes)}, ${periodLabel(period)}`}
+      >
+        <span className={styles.clockTime}>{formatClock(clockMinutes)}</span>
+        <span className={styles.clockPeriod}>{periodLabel(period)}</span>
+      </div>
 
       {/* ---- EXAMINE hotspots ---- */}
       <div className={styles.hotspotLayer}>
@@ -170,9 +177,6 @@ export default function FreeRoamMode() {
           <span className={styles.locationGlyph}>▸</span> CURRENT LOCATION
         </span>
         <span className={styles.locationValue}>{label}</span>
-        <span className={styles.locationMeta}>
-          {formatClock(clockMinutes)} · {periodLabel(period)}
-        </span>
       </div>
 
       {/* ---- MAP button, bottom-right ---- */}

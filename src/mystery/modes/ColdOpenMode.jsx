@@ -41,13 +41,7 @@ export default function ColdOpenMode() {
 
   return (
     <div className={styles.root}>
-      <TerminalChrome
-        sceneId={0}
-        sceneTotal={5}
-        label="Briefing"
-        ghostNumber="04"
-        bracketsStaggered
-      >
+      <TerminalChrome ghostNumber="04" bracketsStaggered hideLabel>
         <div className={styles.scrim} aria-hidden="true" />
 
         <div className={styles.center}>
@@ -102,7 +96,7 @@ export default function ColdOpenMode() {
             ))}
           </div>
 
-          {/* Mission line — the stakes, condensed. */}
+          {/* Mission line — the stakes, condensed to a single quiet directive. */}
           <motion.div
             className={styles.mission}
             initial={{ opacity: 0 }}
@@ -110,7 +104,9 @@ export default function ColdOpenMode() {
             transition={{ duration: 0.32, delay: 0.85, ease: EASE_QUART }}
           >
             <span className={styles.missionGlyph} aria-hidden="true">▸</span>
-            WALK THE FLOOR. READ WHAT’S LEFT. NAME THE KILLER BEFORE HE BURIES IT.
+            <span className={styles.missionText}>
+              Walk the floor. Read what’s left. Name the killer before he buries it.
+            </span>
           </motion.div>
 
           {/* The single decisive action. */}

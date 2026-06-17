@@ -50,21 +50,18 @@ export default function EndingMode() {
       <FlashWipe active={flashing} />
 
       <TerminalChrome
-        sceneId={5}
-        sceneTotal={5}
         label="Verdict"
-        ghostNumber={ending.id}
         bracketsStaggered
       >
         <div className={styles.scrim} aria-hidden="true" />
 
         <div className={styles.center}>
-          {/* Case stamp — the ending id, big and toned. */}
+          {/* Case stamp — the ending id, faint eyebrow. */}
           <motion.div
             className={styles.stamp}
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: 0.12, ease: EASE_QUART }}
+            transition={{ duration: 0.3, delay: 0.1, ease: EASE_QUART }}
           >
             CASE OUTCOME · {ending.id}
           </motion.div>
@@ -74,9 +71,9 @@ export default function EndingMode() {
             className={styles.title}
             initial={{ opacity: 0, y: 10, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.34, delay: 0.18, ease: EASE_QUART }}
+            transition={{ duration: 0.34, delay: 0.16, ease: EASE_QUART }}
           >
-            <ScrambleText target={ending.title} duration={560} />
+            <ScrambleText target={ending.title} duration={560} className={styles.titleText} />
           </motion.h1>
 
           {/* Verdict line — toned rule above, label below. */}
@@ -84,24 +81,24 @@ export default function EndingMode() {
             className={styles.verdictWrap}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.5, ease: EASE_QUART }}
+            transition={{ duration: 0.3, delay: 0.28, ease: EASE_QUART }}
           >
             <motion.div
               className={styles.rule}
               initial={{ width: 0 }}
               animate={{ width: 220 }}
-              transition={{ duration: 0.32, delay: 0.52, ease: EASE_QUART }}
+              transition={{ duration: 0.32, delay: 0.3, ease: EASE_QUART }}
               aria-hidden="true"
             />
             <div className={styles.verdict}>{ending.verdict}</div>
           </motion.div>
 
-          {/* Body — the resolution prose. */}
+          {/* Body — the resolution prose, the readable payoff. */}
           <motion.p
             className={styles.body}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.36, delay: 0.66, ease: EASE_QUART }}
+            transition={{ duration: 0.36, delay: 0.38, ease: EASE_QUART }}
           >
             {ending.body}
           </motion.p>
@@ -114,7 +111,7 @@ export default function EndingMode() {
             onClick={() => actions.restart()}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.34, delay: 0.9, ease: EASE_QUART }}
+            transition={{ duration: 0.34, delay: 0.5, ease: EASE_QUART }}
             onAnimationComplete={() => restartBtnRef.current?.focus()}
           >
             [ RUN IT BACK ]

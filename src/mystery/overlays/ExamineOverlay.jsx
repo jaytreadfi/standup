@@ -170,7 +170,6 @@ export default function ExamineOverlay() {
       >
         <TerminalChrome
           label="Inspector"
-          ghostNumber="EX"
           bracketsStaggered
           className={styles.chrome}
         >
@@ -213,10 +212,20 @@ export default function ExamineOverlay() {
             {/* RIGHT / BOTTOM — heading + readout + evidence verdict. */}
             <div className={styles.readoutCol}>
               <div className={styles.headBlock}>
-                <span className={styles.eyebrow}>▸ CLOSE INSPECTION</span>
-                <h2 className={styles.title}>
-                  <ScrambleText target={target.label} duration={420} />
-                </h2>
+                <div className={styles.headText}>
+                  <span className={styles.eyebrow}>CLOSE INSPECTION</span>
+                  <h2 className={styles.title}>
+                    <ScrambleText target={target.label} duration={420} />
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  className={styles.closeBtn}
+                  onClick={actions.closeExamine}
+                  aria-label="Close inspector"
+                >
+                  ESC
+                </button>
               </div>
 
               <div className={styles.body}>
@@ -253,18 +262,9 @@ export default function ExamineOverlay() {
                     </div>
                   )
                 ) : (
-                  <div className={styles.noEvidence}>— NO EVIDENCE —</div>
+                  <div className={styles.noEvidence}>NO EVIDENCE</div>
                 )}
               </div>
-
-              <button
-                type="button"
-                className={styles.closeBtn}
-                onClick={actions.closeExamine}
-              >
-                <span className={styles.closeKey}>[ ESC ]</span>
-                <span className={styles.closeWord}>CLOSE</span>
-              </button>
             </div>
           </div>
         </TerminalChrome>

@@ -13,7 +13,16 @@
   position: absolute;
   inset: 0;
   overflow: auto;
-  padding: var(--space-8) var(--space-8) var(--space-6);
+  display: flex;
+  padding: var(--space-8);
+}
+
+/* Centered content column — margin:auto pulls it to the middle when there's
+ * spare height, and never clips when the content is taller than the viewport. */
+.inner {
+  margin: auto;
+  width: 100%;
+  max-width: 1200px;
   display: flex;
   flex-direction: column;
   gap: var(--space-7);
@@ -37,7 +46,7 @@
   font-weight: var(--weight-bold);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-text);
+  color: var(--color-accent);
 }
 
 .warn {
@@ -93,7 +102,7 @@
 /* ---------- Suspect board ---------- */
 .suspectGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--space-3);
 }
 
@@ -121,38 +130,6 @@
   border-color: var(--color-accent);
   background: rgba(245, 124, 58, 0.06);
   box-shadow: inset 0 0 0 1px var(--color-accent);
-}
-
-.cardTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.slot {
-  font-family: var(--font-mono);
-  font-size: var(--font-xs);
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.08em;
-  color: var(--color-accent);
-  font-variant-numeric: tabular-nums;
-}
-
-.suspBadge {
-  font-family: var(--font-mono);
-  font-size: var(--font-sm);
-  font-weight: var(--weight-bold);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-  color: var(--color-text-muted);
-}
-
-.suspBadge[data-tier='warn'] {
-  color: var(--color-warn);
-}
-
-.suspBadge[data-tier='danger'] {
-  color: var(--color-danger);
 }
 
 .portraitWrap {
@@ -321,35 +298,12 @@
   color: var(--color-text);
 }
 
-.clueWeight {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  padding: 2px var(--space-2);
-  border: 1px solid var(--color-border-strong);
-  flex: none;
-}
-
-.clueWeight[data-weight='CORE'] {
-  color: var(--color-warn);
-  border-color: var(--color-warn);
-}
-
-.clueWeight[data-weight='HEAVY'] {
-  color: var(--color-danger);
-  border-color: var(--color-danger);
-}
-
-/* ---------- Actions ---------- */
+/* ---------- Actions — balanced: cancel left, confirm right ---------- */
 .actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: var(--space-4);
-  margin-top: auto;
   padding-top: var(--space-5);
   border-top: 1px solid var(--color-border-strong);
 }

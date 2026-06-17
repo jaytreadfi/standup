@@ -54,19 +54,10 @@
   padding-top: var(--space-2);
 }
 
-.kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
+.hint {
   font-size: var(--font-xs);
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.kickerGlyph {
-  color: var(--color-accent);
+  letter-spacing: 0.04em;
+  color: var(--color-text-dim);
 }
 
 .clock {
@@ -159,9 +150,7 @@
 
 /* Lift the labels / markers above the scene + scrim. */
 .blockHead,
-.blockLabel,
 .here,
-.cost,
 .dots {
   position: relative;
   z-index: 2;
@@ -214,17 +203,10 @@
 
 .blockHead {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   width: 100%;
   gap: var(--space-2);
-}
-
-.blockShort {
-  font-size: var(--font-xs);
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.18em;
-  color: var(--color-accent);
 }
 
 .blockLabel {
@@ -234,7 +216,7 @@
   line-height: var(--line-tight);
   text-transform: uppercase;
   color: var(--color-text);
-  max-width: 100%;
+  min-width: 0;
 }
 
 /* Evidence indicator — subtle ◦ (unfound) / ● (cleared). */
@@ -266,34 +248,18 @@
   background: var(--color-accent);
 }
 
-/* Travel cost hint — hidden until hover/focus on non-current blocks. */
-.cost {
-  margin-top: auto;
-  font-size: 9px;
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-  opacity: 0;
-  transform: translateY(2px);
-  transition:
-    opacity var(--dur-fast) var(--ease-quart),
-    transform var(--dur-fast) var(--ease-quart);
-}
-
-.block:hover .cost,
-.block:focus-visible .cost {
-  opacity: 1;
-  transform: none;
-}
-
-/* NPC presence dots row. */
+/* NPC presence dots row — pins the bottom group; when a YOU ARE HERE tag is
+ * present that tag carries the auto-margin and the dots tuck just beneath it. */
 .dots {
   display: flex;
   align-items: center;
   gap: 3px;
   flex-wrap: wrap;
   min-height: 5px;
+}
+
+.block:not([data-here]) .dots {
+  margin-top: auto;
 }
 
 .dot {
@@ -398,18 +364,9 @@
   outline: none;
 }
 
-.closeKey {
-  color: var(--color-accent);
-}
-
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .scrim,
   .panel { animation: none; }
   .block[data-here] { animation: none; }
-  .cost {
-    transition: none;
-    opacity: 1;
-    transform: none;
-  }
 }

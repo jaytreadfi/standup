@@ -196,10 +196,18 @@
 
 .headBlock {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
   padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--color-border);
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
 .eyebrow {
@@ -312,7 +320,6 @@
 .evidenceRow {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   gap: var(--space-3);
   margin-top: var(--space-2);
 }
@@ -324,29 +331,6 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-text);
-}
-
-.evidenceWeight {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 4px;
-  font-family: var(--font-mono);
-  font-size: var(--font-sm);
-  font-weight: 700;
-  color: var(--color-accent);
-  white-space: nowrap;
-}
-
-.weightTag {
-  letter-spacing: 0.14em;
-}
-
-.weightSep {
-  color: var(--color-text-muted);
-}
-
-.weightNum {
-  color: var(--color-accent);
 }
 
 .evidencePending {
@@ -371,23 +355,19 @@
   text-transform: uppercase;
 }
 
-/* ---------------- Close button ---------------- */
+/* ---------------- Close control (header, right) ---------------- */
 
 .closeBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  align-self: flex-start;
-  margin-top: var(--space-5);
-  padding: var(--space-2) var(--space-4);
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border-strong);
-  background: var(--color-surface-2);
+  background: transparent;
   font-family: var(--font-mono);
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--color-text-dim);
+  color: var(--color-text-muted);
   cursor: pointer;
   transition:
     color var(--dur-fast) var(--ease-quart),
@@ -401,19 +381,6 @@
   background: var(--color-accent);
   border-color: var(--color-accent);
   outline: none;
-}
-
-.closeKey {
-  color: var(--color-accent);
-}
-
-.closeBtn:hover .closeKey,
-.closeBtn:focus-visible .closeKey {
-  color: var(--color-canvas);
-}
-
-.closeWord {
-  letter-spacing: 0.2em;
 }
 
 /* ---------------- Responsive — stack on narrow screens ---------------- */

@@ -27,8 +27,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-6);
-  padding: var(--space-12) var(--space-8);
+  gap: var(--space-7);
+  padding: var(--space-8) var(--space-8);
   text-align: center;
 }
 
@@ -86,18 +86,18 @@
 .brief {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  max-width: 620px;
+  gap: var(--space-6);
+  max-width: 580px;
 }
 
 .briefLine {
   display: grid;
-  grid-template-columns: 64px 1fr;
-  column-gap: var(--space-4);
+  grid-template-columns: 56px 1fr;
+  column-gap: var(--space-5);
   align-items: start;
   text-align: left;
-  border-left: 1px solid var(--color-border-strong);
-  padding-left: var(--space-4);
+  border-left: 1px solid var(--color-border);
+  padding-left: var(--space-5);
 }
 
 .speaker {
@@ -107,29 +107,32 @@
   letter-spacing: 0.18em;
   color: var(--color-accent);
   text-transform: uppercase;
-  padding-top: 3px;
+  padding-top: 4px;
 }
 
 .spoken {
   font-family: var(--font-mono);
-  font-size: var(--font-base);
-  line-height: var(--line-base);
-  color: var(--color-text);
+  font-size: var(--font-sm);
+  line-height: 1.65;
+  color: var(--color-text-dim);
   letter-spacing: var(--track);
 }
 
 /* ---------- Mission line ---------- */
 .mission {
   display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
+  align-items: baseline;
+  gap: var(--space-3);
   font-family: var(--font-mono);
   font-size: var(--font-sm);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  max-width: 620px;
+  letter-spacing: 0.02em;
+  color: var(--color-text-muted);
+  max-width: 560px;
   line-height: var(--line-base);
+}
+
+.missionText {
+  text-align: left;
 }
 
 .missionGlyph {
@@ -139,15 +142,15 @@
 
 /* ---------- Begin button ---------- */
 .beginBtn {
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-4) var(--space-10);
+  padding: var(--space-4) var(--space-12);
   font-family: var(--font-mono);
   font-size: var(--font-md);
   font-weight: var(--weight-bold);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--color-accent);
   background: transparent;

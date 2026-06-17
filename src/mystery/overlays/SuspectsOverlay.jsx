@@ -58,10 +58,7 @@ export default function SuspectsOverlay() {
         transition={{ duration: 0.2, ease: [0.76, 0, 0.24, 1] }}
       >
         <TerminalChrome
-          sceneId={1}
-          sceneTotal={1}
           label="Suspect Board"
-          ghostNumber="SB"
           labelPosition="tl"
         >
           <div className={styles.body}>
@@ -71,7 +68,7 @@ export default function SuspectsOverlay() {
               onClick={() => actions.closeOverlay()}
               aria-label="Close suspect board"
             >
-              [ X ] CLOSE
+              ESC
             </button>
 
             <p className={styles.note}>
@@ -82,24 +79,21 @@ export default function SuspectsOverlay() {
             <div className={styles.grid}>
               {suspects.map((s) => (
                 <div key={s.id} className={styles.card}>
-                  <div className={styles.cardHead}>
-                    <span className={styles.slot}>{s.slot}</span>
-                    <span className={styles.portraitWrap}>
-                      <SpriteFrame
-                        src={portraitUrl(s.id)}
-                        cols={3}
-                        rows={3}
-                        col={0}
-                        row={0}
-                        size={48}
-                        title={s.name}
-                      />
-                    </span>
-                    <span className={styles.identity}>
-                      <span className={styles.name}>{s.name.toUpperCase()}</span>
-                      <span className={styles.role}>{s.role}</span>
-                    </span>
-                  </div>
+                  <span className={styles.portraitWrap}>
+                    <SpriteFrame
+                      src={portraitUrl(s.id)}
+                      cols={3}
+                      rows={3}
+                      col={0}
+                      row={0}
+                      size={48}
+                      title={s.name}
+                    />
+                  </span>
+                  <span className={styles.identity}>
+                    <span className={styles.name}>{s.name.toUpperCase()}</span>
+                    <span className={styles.role}>{s.role}</span>
+                  </span>
                 </div>
               ))}
             </div>

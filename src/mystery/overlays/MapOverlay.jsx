@@ -83,13 +83,10 @@ export default function MapOverlay() {
         exit={{ opacity: 0, y: 8 }}
         transition={{ duration: 0.2, ease: [0.76, 0, 0.24, 1] }}
       >
-        <TerminalChrome label="Floor Plan · 01" ghostNumber="01">
+        <TerminalChrome label="Floor Plan" ghostNumber="01">
           <div className={styles.inner} data-period={period}>
             <div className={styles.header}>
-              <span className={styles.kicker}>
-                <span className={styles.kickerGlyph} aria-hidden="true">▸</span>
-                NAVIGATION · SELECT DESTINATION
-              </span>
+              <span className={styles.hint}>Select a room to move there</span>
               <span className={styles.clock}>
                 {formatClock(clockMinutes)} · {periodLabel(period)}
               </span>
@@ -153,7 +150,7 @@ export default function MapOverlay() {
                       <span className={styles.blockScrim} aria-hidden="true" />
 
                       <span className={styles.blockHead}>
-                        <span className={styles.blockShort}>{room.short}</span>
+                        <span className={styles.blockLabel}>{room.label}</span>
                         {total > 0 && (
                           <span
                             className={styles.evidence}
@@ -165,17 +162,11 @@ export default function MapOverlay() {
                         )}
                       </span>
 
-                      <span className={styles.blockLabel}>{room.label}</span>
-
                       {isHere && (
                         <span className={styles.here}>
                           <span className={styles.hereDot} aria-hidden="true" />
                           YOU ARE HERE
                         </span>
-                      )}
-
-                      {!isHere && (
-                        <span className={styles.cost} aria-hidden="true">▸ MOVE</span>
                       )}
 
                       <span className={styles.dots} aria-hidden="true">
@@ -219,8 +210,9 @@ export default function MapOverlay() {
                 type="button"
                 className={styles.close}
                 onClick={() => actions.closeMap()}
+                aria-label="Close map"
               >
-                <span className={styles.closeKey}>[ ESC ]</span> CLOSE
+                ESC
               </button>
             </div>
           </div>

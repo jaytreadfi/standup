@@ -29,8 +29,8 @@
 .row {
   position: relative;
   display: grid;
-  grid-template-columns: 28px 36px 1fr auto;
-  column-gap: var(--space-3);
+  grid-template-columns: 36px 1fr;
+  column-gap: var(--space-4);
   align-items: center;
   padding: var(--space-2) 0 var(--space-2) var(--space-2);
   margin-left: calc(var(--space-2) * -1); /* keep content flush w/ panel padding while reserving space for active stripe */
@@ -70,14 +70,6 @@
 
 .row[data-active='false'] .name {
   color: var(--color-text-dim);
-}
-
-/* ---------- Slot id ---------- */
-.slot {
-  color: var(--color-accent);
-  font-weight: var(--weight-bold);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.08em;
 }
 
 /* ---------- Portrait frame ---------- */
@@ -136,23 +128,4 @@
 .statusSuffix {
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
-}
-
-/* ---------- Badge — tabular suspicion meter ---------- */
-.badge {
-  font-variant-numeric: tabular-nums;
-  font-weight: var(--weight-bold);
-  letter-spacing: 0.04em;
-  text-align: right;
-  padding-left: var(--space-3);
-  color: var(--color-text-muted);
-  transition: color var(--dur-fast) var(--ease-quart);
-}
-
-.badge[data-tier='warn'] {
-  color: var(--color-warn);
-}
-
-.badge[data-tier='danger'] {
-  color: var(--color-danger);
 }
