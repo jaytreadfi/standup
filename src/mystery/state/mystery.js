@@ -26,7 +26,7 @@ import { clues } from '@/mystery/data/clues';
 const _loaded = saveLoad.load();
 
 const _initial = _loaded ?? {
-  mode: 'BOOT',
+  mode: 'LANDING',
   overlay: null,
   clockMinutes: START_MINUTE,
   currentRoom: 'coworking',
@@ -47,7 +47,7 @@ if (_loaded) {
 // Writeable atoms — export each individually.
 // ---------------------------------------------------------------------------
 
-/** @type {import('jotai').PrimitiveAtom<'BOOT'|'COLD_OPEN'|'FREE_ROAM'|'DIALOGUE'|'ACCUSATION'|'ENDING'>} */
+/** @type {import('jotai').PrimitiveAtom<'LANDING'|'INTRO'|'COLD_OPEN'|'FREE_ROAM'|'DIALOGUE'|'ACCUSATION'|'ENDING'>} */
 export const modeAtom = atom(_initial.mode);
 
 /** @type {import('jotai').PrimitiveAtom<'NOTEBOOK'|'SUSPECTS'|'EXAMINE'|null>} */

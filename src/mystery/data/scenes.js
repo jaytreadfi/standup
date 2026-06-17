@@ -31,6 +31,14 @@ const evidenceModules = import.meta.glob('../../assets/evidence/*.{png,jpg,jpeg,
   import: 'default',
 });
 
+// Intro slideshow stills — opaque illustrated POV frames keyed by basename
+// (e.g. '01', '07'), shipped as JPEG like the scene art.
+const introModules = import.meta.glob('../../assets/intro/*.{jpg,jpeg,png}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
+
 /** Build a { basename: url } lookup from a glob result keyed by full path. */
 function indexByBasename(modules) {
   const out = {};
@@ -44,6 +52,7 @@ function indexByBasename(modules) {
 export const sceneUrls = indexByBasename(sceneModules);
 export const portraitUrls = indexByBasename(portraitModules);
 export const evidenceUrls = indexByBasename(evidenceModules);
+export const introUrls = indexByBasename(introModules);
 
 /**
  * Resolve a scene asset key to its bundled URL.
@@ -70,4 +79,13 @@ export function portraitUrl(id) {
  */
 export function evidenceUrl(key) {
   return key ? (evidenceUrls[key] ?? null) : null;
+}
+
+/**
+ * Resolve an intro slide key to its bundled URL.
+ * @param {string} key e.g. '01'
+ * @returns {string|null}
+ */
+export function introUrl(key) {
+  return introUrls[key] ?? null;
 }

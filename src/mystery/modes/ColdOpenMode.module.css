@@ -1,55 +1,62 @@
-/* ColdOpenMode — cinematic briefing beat.
- * TREAD/OS dispatch framing, scrambled title, David's verbatim brief, one
- * decisive [ BEGIN SHIFT ]. Brutalist: zero radius, sharp 1px frames,
- * single warm-orange accent. */
+/* ColdOpenMode — the opening group cutscene, played NPC-style one beat at a
+ * time over the darkened Commons. Reuses the DialogueMode portrait + typewriter
+ * look (bg / scrim / vignette / stage / portrait panel / dialogue box) plus a
+ * chapter title card and a centered stage-direction narration card.
+ * Brutalist: zero radius, sharp 1px frames, single warm-orange accent. */
 
 .root {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+  background: var(--color-canvas);
 }
 
-/* Subtle top-down vignette so the briefing column reads as lit from above. */
+/* ---------- Background: Commons night scene, heavily darkened ---------- */
+.bg {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  filter: brightness(0.26) saturate(0.7) contrast(1.05);
+  z-index: 0;
+}
+
 .scrim {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(120% 90% at 50% 0%, rgba(245, 124, 58, 0.05), transparent 55%),
-    linear-gradient(180deg, rgba(10, 10, 10, 0) 40%, rgba(10, 10, 10, 0.6) 100%);
+    linear-gradient(180deg, rgba(10, 10, 10, 0.55) 0%, rgba(10, 10, 10, 0.78) 55%, rgba(10, 10, 10, 0.92) 100%);
+  z-index: 1;
   pointer-events: none;
-  z-index: 0;
 }
 
-.center {
+.vignette {
   position: absolute;
   inset: 0;
+  background:
+    radial-gradient(120% 90% at 18% 40%, rgba(245, 124, 58, 0.05) 0%, transparent 45%),
+    radial-gradient(140% 120% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.6) 100%);
   z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-7);
-  padding: var(--space-8) var(--space-8);
+  pointer-events: none;
+}
+
+/* ---------- Title beat: chapter card ---------- */
+.titleStage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
   text-align: center;
+  padding: var(--space-8);
+  cursor: pointer;
 }
 
-/* ---------- Preamble (dispatch lines) ---------- */
-.preamble {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  align-items: center;
+.titleStage:focus-visible {
+  outline: none;
 }
 
-.preline {
-  font-family: var(--font-mono);
-  font-size: var(--font-xs);
-  color: var(--color-text-dim);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-/* ---------- Title ---------- */
 .titleWrap {
   display: flex;
   flex-direction: column;
@@ -82,67 +89,232 @@
   background: var(--color-accent);
 }
 
-/* ---------- Briefing body ---------- */
-.brief {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  max-width: 580px;
-}
-
-.briefLine {
-  display: grid;
-  grid-template-columns: 56px 1fr;
-  column-gap: var(--space-5);
-  align-items: start;
-  text-align: left;
-  border-left: 1px solid var(--color-border);
-  padding-left: var(--space-5);
-}
-
-.speaker {
+.titleHint {
+  margin-top: var(--space-5);
   font-family: var(--font-mono);
   font-size: var(--font-xs);
   font-weight: var(--weight-bold);
   letter-spacing: 0.18em;
-  color: var(--color-accent);
-  text-transform: uppercase;
-  padding-top: 4px;
-}
-
-.spoken {
-  font-family: var(--font-mono);
-  font-size: var(--font-sm);
-  line-height: 1.65;
-  color: var(--color-text-dim);
-  letter-spacing: var(--track);
-}
-
-/* ---------- Mission line ---------- */
-.mission {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--space-3);
-  font-family: var(--font-mono);
-  font-size: var(--font-sm);
-  letter-spacing: 0.02em;
   color: var(--color-text-muted);
-  max-width: 560px;
-  line-height: var(--line-base);
 }
 
-.missionText {
-  text-align: left;
-}
-
-.missionGlyph {
+.titleStage:focus-visible .titleHint {
   color: var(--color-accent);
-  flex: none;
 }
 
-/* ---------- Begin button ---------- */
+/* ---------- Stage-direction beat: centered narration card ---------- */
+.dirStage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-7);
+  text-align: center;
+  padding: var(--space-8);
+  cursor: pointer;
+}
+
+.dirStage:focus-visible {
+  outline: none;
+}
+
+.dirCard {
+  max-width: 560px;
+}
+
+.dirText {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-md);
+  font-style: italic;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  color: var(--color-text-muted);
+}
+
+.next {
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.18em;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.dirStage:focus-visible .next {
+  color: var(--color-accent);
+}
+
+/* ---------- Spoken beat: portrait panel + line column ---------- */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(200px, 280px) 1fr;
+  align-items: end;
+  gap: var(--space-10);
+  padding: var(--space-8);
+  box-sizing: border-box;
+}
+
+.charPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-self: end;
+}
+
+.portraitFrame {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.portrait {
+  width: 100%;
+  height: 100%;
+  background-position: 0 0;
+  filter: contrast(1.04) brightness(1.02);
+}
+
+.portraitFallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--font-display);
+  font-weight: 700;
+  color: var(--color-accent);
+  background: var(--color-surface-2);
+}
+
+.scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(245, 124, 58, 0.4), transparent);
+  opacity: 0.5;
+  pointer-events: none;
+  animation: scanDrift 4.5s linear infinite;
+}
+
+@keyframes scanDrift {
+  0% { top: -2px; }
+  100% { top: 200px; }
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--color-accent);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.idTag {
+  font-size: var(--font-xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--color-text-muted);
+}
+
+.name {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  color: var(--color-text);
+}
+
+.role {
+  font-size: var(--font-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--color-text-muted);
+}
+
+.convo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: 760px;
+  width: 100%;
+  align-self: end;
+}
+
+.dialogueBox {
+  position: relative;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-strong);
+  border-left: 2px solid var(--color-accent);
+  background:
+    linear-gradient(180deg, rgba(20, 20, 20, 0.96), rgba(15, 15, 15, 0.96));
+  min-height: 128px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dialogueBox:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.text {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-md);
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  color: var(--color-text);
+  white-space: pre-wrap;
+}
+
+.caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--color-accent);
+  animation: caretBlink 900ms steps(1) infinite;
+}
+
+@keyframes caretBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.skipHint,
+.nextHint {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--font-xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.nextHint {
+  color: var(--color-accent);
+}
+
+/* ---------- Begin button (final beat) ---------- */
 .beginBtn {
-  margin-top: var(--space-3);
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
@@ -190,7 +362,7 @@
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .underline {
-    width: 180px !important;
-  }
+  .scanline { animation: none; opacity: 0.3; top: 50%; }
+  .caret { animation: none; opacity: 1; }
+  .underline { width: 180px !important; }
 }

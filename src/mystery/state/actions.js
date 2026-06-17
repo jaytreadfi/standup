@@ -47,7 +47,7 @@ const MIN_CLUES_TO_ACCUSE = MAX_ACCUSATION_CLUES;
 const DEFAULT_OBJECTIVE = 'Yibo’s dead on the pantry floor. Name the killer before David buries it. The Great Room opens at dawn and then it’s out of your hands.';
 
 const FRESH_STATE = {
-  mode: 'COLD_OPEN',
+  mode: 'LANDING',
   overlay: null,
   mapOpen: false,
   clockMinutes: clock.START_MINUTE,
@@ -215,6 +215,16 @@ export function useGameActions() {
         endDialogue() {
           set(dialogueAtom, null);
           set(modeAtom, 'FREE_ROAM');
+        },
+
+        // ---- opening flow ----
+        enterGame() {
+          set(modeAtom, 'INTRO');
+          telemetry.event(telemetry.EVENT_NAMES.MODE_CHANGE, { to: 'INTRO' });
+        },
+        endIntro() {
+          set(modeAtom, 'COLD_OPEN');
+          telemetry.event(telemetry.EVENT_NAMES.MODE_CHANGE, { to: 'COLD_OPEN' });
         },
 
         // ---- cold open ----

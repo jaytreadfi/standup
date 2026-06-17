@@ -8,8 +8,8 @@
  * Usage:
  *   node tasks/ui-audit/capture.mjs <outDir> [surface] [--url=http://localhost:5180/mystery] [--w=1440] [--h=900]
  *
- *   surface ∈ all (default) | coldopen | freeroam | map | evidence |
- *             suspects | examine | dialogue | accusation | ending
+ *   surface ∈ all (default) | landing | intro | coldopen | freeroam | map |
+ *             evidence | suspects | examine | dialogue | accusation | ending
  *
  * Gotchas honored (see tasks/lessons.md):
  *   - NEVER waitUntil:'networkidle' against Vite (HMR ws never idles) → domcontentloaded + fixed wait.
@@ -105,7 +105,7 @@ async function run() {
     page.on('pageerror', (e) => consoleErrors.push('PAGEERROR ' + e.message));
 
     await page.goto(URL, { waitUntil: 'domcontentloaded' });
-    await wait(1700); // boot → cold-open auto-advance (300ms) + full briefing reveal (~1.0s delays)
+    await wait(900); // LANDING title card reveal (~0.6s staggered)
 
     // If a sibling agent's mid-edit left a transient Vite error overlay up, give
     // HMR a moment to recover and reload before shooting (avoids false "broken").
@@ -115,16 +115,43 @@ async function run() {
       log('vite error overlay present — waiting for HMR recovery…');
       await wait(2000);
       await page.reload({ waitUntil: 'domcontentloaded' }).catch(() => {});
-      await wait(1700);
+      await wait(900);
     }
 
-    // ---- COLD OPEN (the "landing"/briefing) ----
+    // ---- LANDING (title "STANDUP" + [ ENTER GAME ]) ----
+    if (want('landing')) await safe('landing', () => shot(page, '00-landing'));
+
+    // ---- Enter the game → INTRO slideshow ----
+    await safe('enter-game', async () => {
+      const enter = page.getByRole('button', { name: /enter game/i }).first();
+      if (await enter.count()) await enter.click({ timeout: 2000 });
+      await wait(900); // first slide fades/Ken-Burns in
+    });
+
+    // ---- INTRO (POV slideshow) ----
+    if (want('intro')) await safe('intro', () => shot(page, '00b-intro'));
+
+    // ---- Skip the intro → COLD OPEN ----
+    await safe('skip-intro', async () => {
+      const skip = page.getByRole('button', { name: /skip/i }).first();
+      if (await skip.count()) await skip.click({ timeout: 2000 });
+      await wait(800); // cold-open title card reveal
+    });
+
+    // ---- COLD OPEN (David gathers the team — interactive, one beat at a time) ----
     if (want('coldopen')) await safe('coldopen', () => shot(page, '01-coldopen'));
 
-    // ---- Enter the field ----
+    // ---- Advance the cutscene beat by beat until [ WALK THE FLOOR ] ----
     await safe('begin-shift', async () => {
-      const begin = page.getByRole('button', { name: /begin shift|walk the floor/i }).first();
-      if (await begin.count()) await begin.click({ timeout: 2000 });
+      const begin = page.getByRole('button', { name: /begin shift|walk the floor/i });
+      // Each beat advances on click/Space; skip-reveal then advance, up to all beats.
+      for (let i = 0; i < 24; i++) {
+        if (await begin.count().catch(() => 0)) break;
+        await page.keyboard.press('Space').catch(() => {});
+        await wait(250);
+      }
+      const walk = begin.first();
+      if (await walk.count().catch(() => 0)) await walk.click({ timeout: 2000 });
       await wait(700);
     });
 

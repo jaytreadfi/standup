@@ -2,7 +2,7 @@
  * canOpenOverlay — overlay permission lookup for Tread Office.
  * Pure function. No imports.
  *
- * Modes:   'BOOT' | 'COLD_OPEN' | 'FREE_ROAM' | 'DIALOGUE' | 'ACCUSATION' | 'ENDING'
+ * Modes:   'LANDING' | 'INTRO' | 'COLD_OPEN' | 'FREE_ROAM' | 'DIALOGUE' | 'ACCUSATION' | 'ENDING'
  * Overlays: 'NOTEBOOK' | 'SUSPECTS' | 'EXAMINE' | null
  */
 
@@ -18,7 +18,12 @@ export const OVERLAY_RULES = {
     SUSPECTS: true,
     EXAMINE:  false, // cannot examine while in conversation
   },
-  BOOT: {
+  LANDING: {
+    NOTEBOOK: false,
+    SUSPECTS: false,
+    EXAMINE:  false,
+  },
+  INTRO: {
     NOTEBOOK: false,
     SUSPECTS: false,
     EXAMINE:  false,

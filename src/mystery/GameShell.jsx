@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import {
@@ -13,7 +13,8 @@ import {
 import { useGameClock } from '@/mystery/state/actions';
 import * as telemetry from '@/mystery/engine/telemetry';
 
-import BootMode from '@/mystery/modes/BootMode.jsx';
+import LandingMode from '@/mystery/modes/LandingMode.jsx';
+import IntroMode from '@/mystery/modes/IntroMode.jsx';
 import ColdOpenMode from '@/mystery/modes/ColdOpenMode.jsx';
 import FreeRoamMode from '@/mystery/modes/FreeRoamMode.jsx';
 import DialogueMode from '@/mystery/modes/DialogueMode.jsx';
@@ -68,7 +69,8 @@ function Announcer() {
 
 // Cinematic / focused modes — render full-screen, no HUD chrome.
 const FULLSCREEN_MODES = {
-  BOOT: BootMode,
+  LANDING: LandingMode,
+  INTRO: IntroMode,
   COLD_OPEN: ColdOpenMode,
   ACCUSATION: AccusationMode,
   ENDING: EndingMode,
@@ -82,7 +84,6 @@ const HUD_MODES = {
 
 export default function GameShell() {
   const mode = useAtomValue(modeAtom);
-  const setMode = useSetAtom(modeAtom);
   const overlay = useAtomValue(overlayAtom);
   const mapOpen = useAtomValue(mapOpenAtom);
   const shellRef = useRef(null);
@@ -99,14 +100,6 @@ export default function GameShell() {
     const el = shellRef.current;
     if (el) el.inert = overlayOpen;
   }, [overlayOpen]);
-
-  // Auto-advance the boot splash into the cold-open briefing.
-  useEffect(() => {
-    if (mode === 'BOOT') {
-      const t = setTimeout(() => setMode('COLD_OPEN'), 300);
-      return () => clearTimeout(t);
-    }
-  }, [mode, setMode]);
 
   useEffect(() => {
     telemetry.event('shell_mounted', { ts: Date.now() });

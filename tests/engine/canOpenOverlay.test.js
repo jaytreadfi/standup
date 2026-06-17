@@ -3,7 +3,7 @@ import { canOpenOverlay } from '@/mystery/engine/canOpenOverlay';
 describe('canOpenOverlay', () => {
   // null overlay (close) is always permitted regardless of mode
   describe('null overlay — always true', () => {
-    const modes = ['FREE_ROAM', 'DIALOGUE', 'BOOT', 'COLD_OPEN', 'ACCUSATION', 'ENDING'];
+    const modes = ['FREE_ROAM', 'DIALOGUE', 'LANDING', 'INTRO', 'COLD_OPEN', 'ACCUSATION', 'ENDING'];
     for (const mode of modes) {
       it(`returns true for ${mode} × null`, () => {
         expect(canOpenOverlay(mode, null)).toBe(true);
@@ -25,9 +25,9 @@ describe('canOpenOverlay', () => {
     it('blocks EXAMINE',  () => expect(canOpenOverlay('DIALOGUE', 'EXAMINE')).toBe(false));
   });
 
-  // Locked-out modes: BOOT, COLD_OPEN, ACCUSATION, ENDING — all false
+  // Locked-out modes: LANDING, INTRO, COLD_OPEN, ACCUSATION, ENDING — all false
   describe('locked-out modes block all overlays', () => {
-    const blockedModes = ['BOOT', 'COLD_OPEN', 'ACCUSATION', 'ENDING'];
+    const blockedModes = ['LANDING', 'INTRO', 'COLD_OPEN', 'ACCUSATION', 'ENDING'];
     const overlays = ['NOTEBOOK', 'SUSPECTS', 'EXAMINE'];
 
     for (const mode of blockedModes) {
