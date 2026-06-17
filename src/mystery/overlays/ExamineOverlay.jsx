@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 
 import TerminalChrome from '@/components/chrome/TerminalChrome';
 import ScrambleText from '@/components/chrome/ScrambleText';
-import FlashWipe from '@/components/chrome/FlashWipe';
 
 import { useGameActions } from '@/mystery/state/actions';
 import { useDialogFocus } from './useDialogFocus';
@@ -100,7 +99,6 @@ export default function ExamineOverlay() {
 
   // Evidence callout reveals a beat after the panel slams in, for weight.
   const [showEvidence, setShowEvidence] = useState(false);
-  const [flashOn, setFlashOn] = useState(false);
   // Sofa note: the card shows the jacket on the sofa; this toggles to the
   // close-up of the note in the pocket.
   const [zoomed, setZoomed] = useState(false);
@@ -117,21 +115,15 @@ export default function ExamineOverlay() {
     return () => window.removeEventListener('keydown', onKey);
   }, [actions]);
 
-  // Stage the evidence reveal (orange flash → slot/label) shortly after mount.
+  // Stage the evidence reveal (slot/label) a beat after the panel slams in.
   useEffect(() => {
     setShowEvidence(false);
-    setFlashOn(false);
     setZoomed(false);
     if (!clue) return undefined;
     const reduced = prefersReducedMotion();
     const delay = reduced ? 0 : 420;
     const t = setTimeout(() => {
       setShowEvidence(true);
-      if (!reduced) {
-        setFlashOn(true);
-        // FlashWipe is a single 180ms pulse; reset the trigger after it plays.
-        setTimeout(() => setFlashOn(false), 220);
-      }
     }, delay);
     return () => clearTimeout(t);
   }, [clue, examine?.targetId]);
@@ -172,8 +164,6 @@ export default function ExamineOverlay() {
       aria-modal="true"
       aria-label={`Inspecting ${target.label}`}
     >
-      <FlashWipe active={flashOn} />
-
       <motion.div
         ref={panelRef}
         className={styles.panel}
