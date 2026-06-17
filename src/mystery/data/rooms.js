@@ -44,7 +44,7 @@ export const rooms = [
     adjacents: ALL_ADJACENT.filter((r) => r !== 'office'),
     examineTargets: [
       { id: 'of-desk', label: 'DAVID’S SPOT', x: 0.50, y: 0.58, flavor: 'Something is wedged half under David’s spot at the long team desk: a laptop with a sticker from a Singapore conference. Yibo’s. Still warm. The screen wakes to a spreadsheet of numbers that don’t match the ones David’s been showing investors.', clueId: 'retrieved-proof', image: 'retrieved-proof' },
-      { id: 'of-faker', label: 'OLD PHOTO', x: 0.80, y: 0.42, flavor: 'An old framed photo, the only thing on this floor older than the company. A much younger David and Yibo, grinning like idiots, crammed either side of Faker at some tournament in Seoul a lifetime ago. Two kids who met their hero and went home swearing they’d build something of their own. They did. Look how it turned out.', image: 'faker-photo' },
+      { id: 'of-faker', label: 'OLD PHOTO', x: 0.80, y: 0.42, flavor: 'An old framed photo, the only thing on this floor older than the company. A much younger David and Yibo, grinning like idiots, crammed either side of Faker at some tournament in Seoul a lifetime ago. Two kids who met their hero and went home swearing they’d build something of their own. They did. Look how it turned out.', image: 'faker-photo', imageAspect: '4 / 3' },
     ],
     schematic: { x: 0.68, y: 0.08, w: 0.28, h: 0.38 },
   },

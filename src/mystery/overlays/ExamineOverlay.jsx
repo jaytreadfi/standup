@@ -193,13 +193,25 @@ export default function ExamineOverlay() {
             <div className={styles.viewport} data-period={period}>
               <div className={styles.crop}>
                 {evidenceImg ? (
-                  <img
-                    src={evidenceImg}
-                    className={styles.evidenceImg}
-                    style={{ objectFit: evidenceFit }}
-                    alt={`${target.label}${showZoom ? ' detail' : ''}`}
-                    draggable="false"
-                  />
+                  target.imageAspect ? (
+                    <div className={styles.evidenceFit}>
+                      <img
+                        src={evidenceImg}
+                        className={styles.evidenceFramed}
+                        style={{ aspectRatio: target.imageAspect, objectFit: evidenceFit }}
+                        alt={`${target.label}${showZoom ? ' detail' : ''}`}
+                        draggable="false"
+                      />
+                    </div>
+                  ) : (
+                    <img
+                      src={evidenceImg}
+                      className={styles.evidenceImg}
+                      style={{ objectFit: evidenceFit }}
+                      alt={`${target.label}${showZoom ? ' detail' : ''}`}
+                      draggable="false"
+                    />
+                  )
                 ) : art ? (
                   <div
                     className={styles.cropImg}

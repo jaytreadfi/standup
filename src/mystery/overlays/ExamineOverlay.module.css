@@ -203,6 +203,24 @@
   filter: contrast(1.03) saturate(1.02);
 }
 
+/* Aspect-locked clue art (e.g. the OLD PHOTO shown at 4:3), centered in the crop
+ * with letterbox bars instead of filling the whole near-square viewport. */
+.evidenceFit {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #000;
+}
+
+.evidenceFramed {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: cover;
+  filter: contrast(1.03) saturate(1.02);
+}
+
 /* Zoom toggle (e.g. READ THE NOTE) on the right of the viewport meta row. */
 .zoomBtn {
   flex-shrink: 0;
