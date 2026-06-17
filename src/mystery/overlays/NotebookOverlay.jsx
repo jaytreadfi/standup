@@ -6,7 +6,8 @@ import { useGameActions } from '@/mystery/state/actions';
 import { useDialogFocus } from './useDialogFocus';
 import { collectedCluesAtom } from '@/mystery/state/mystery';
 import { clueById } from '@/mystery/data/clues';
-import { roomById } from '@/mystery/data/rooms';
+import { roomById, evidenceImageByClueId } from '@/mystery/data/rooms';
+import { evidenceUrl } from '@/mystery/data/scenes';
 import { formatClock } from '@/mystery/engine/clock';
 import styles from './NotebookOverlay.module.css';
 
@@ -86,31 +87,42 @@ export default function NotebookOverlay() {
                 {entries.map((entry, idx) => {
                   const { clue } = entry;
                   const source = roomById[clue.source]?.label ?? clue.source;
+                  const thumb = evidenceUrl(evidenceImageByClueId[clue.id]);
                   const time =
                     typeof entry.atMinute === 'number'
                       ? formatClock(entry.atMinute)
                       : null;
                   return (
                     <li key={entry.id} className={styles.entry}>
-                      <div className={styles.entryHead}>
-                        <span className={styles.entryId}>
-                          {String(idx + 1).padStart(2, '0')}
-                        </span>
-                        <span className={styles.entryLabel}>{clue.label}</span>
-                      </div>
-                      <p className={styles.entryDesc}>{clue.description}</p>
-                      <div className={styles.entryMeta}>
-                        <span className={styles.metaSource}>
-                          {(source ?? '—').toUpperCase()}
-                        </span>
-                        {time && (
-                          <>
-                            <span className={styles.metaSep} aria-hidden="true">
-                              ·
-                            </span>
-                            <span className={styles.metaTime}>{time}</span>
-                          </>
-                        )}
+                      {thumb && (
+                        <img
+                          className={styles.entryThumb}
+                          src={thumb}
+                          alt=""
+                          draggable="false"
+                        />
+                      )}
+                      <div className={styles.entryMain}>
+                        <div className={styles.entryHead}>
+                          <span className={styles.entryId}>
+                            {String(idx + 1).padStart(2, '0')}
+                          </span>
+                          <span className={styles.entryLabel}>{clue.label}</span>
+                        </div>
+                        <p className={styles.entryDesc}>{clue.description}</p>
+                        <div className={styles.entryMeta}>
+                          <span className={styles.metaSource}>
+                            {(source ?? '—').toUpperCase()}
+                          </span>
+                          {time && (
+                            <>
+                              <span className={styles.metaSep} aria-hidden="true">
+                                ·
+                              </span>
+                              <span className={styles.metaTime}>{time}</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </li>
                   );

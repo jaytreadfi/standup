@@ -23,6 +23,14 @@ const portraitModules = import.meta.glob('../../assets/portraits/*.png', {
   import: 'default',
 });
 
+// Evidence art — one dedicated illustration per clue hotspot (plus a couple of
+// flavor/zoom extras). Keyed by basename, e.g. 'two-glasses', 'owed-note-note'.
+const evidenceModules = import.meta.glob('../../assets/evidence/*.{png,jpg,jpeg,webp}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
+
 /** Build a { basename: url } lookup from a glob result keyed by full path. */
 function indexByBasename(modules) {
   const out = {};
@@ -35,6 +43,7 @@ function indexByBasename(modules) {
 
 export const sceneUrls = indexByBasename(sceneModules);
 export const portraitUrls = indexByBasename(portraitModules);
+export const evidenceUrls = indexByBasename(evidenceModules);
 
 /**
  * Resolve a scene asset key to its bundled URL.
@@ -52,4 +61,13 @@ export function sceneUrl(key) {
  */
 export function portraitUrl(id) {
   return portraitUrls[id] ?? null;
+}
+
+/**
+ * Resolve an evidence image key to its bundled URL.
+ * @param {string|null|undefined} key e.g. 'two-glasses'
+ * @returns {string|null}
+ */
+export function evidenceUrl(key) {
+  return key ? (evidenceUrls[key] ?? null) : null;
 }

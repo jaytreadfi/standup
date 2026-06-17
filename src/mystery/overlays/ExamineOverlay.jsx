@@ -11,7 +11,7 @@ import { useDialogFocus } from './useDialogFocus';
 import { examineAtom, clockMinutesAtom } from '@/mystery/state/mystery';
 import { examineTargetById, roomById } from '@/mystery/data/rooms';
 import { clueById } from '@/mystery/data/clues';
-import { sceneUrl } from '@/mystery/data/scenes';
+import { sceneUrl, evidenceUrl } from '@/mystery/data/scenes';
 import { periodFor } from '@/mystery/engine/clock';
 
 import styles from './ExamineOverlay.module.css';
@@ -101,6 +101,9 @@ export default function ExamineOverlay() {
   // Evidence callout reveals a beat after the panel slams in, for weight.
   const [showEvidence, setShowEvidence] = useState(false);
   const [flashOn, setFlashOn] = useState(false);
+  // Sofa note: the card shows the jacket on the sofa; this toggles to the
+  // close-up of the note in the pocket.
+  const [zoomed, setZoomed] = useState(false);
 
   // ESC to close.
   useEffect(() => {
@@ -118,6 +121,7 @@ export default function ExamineOverlay() {
   useEffect(() => {
     setShowEvidence(false);
     setFlashOn(false);
+    setZoomed(false);
     if (!clue) return undefined;
     const reduced = prefersReducedMotion();
     const delay = reduced ? 0 : 420;
@@ -138,6 +142,17 @@ export default function ExamineOverlay() {
   const period = periodFor(clockMinutes);
   const sceneKey = room?.sceneAssetByPeriod?.[period] ?? null;
   const art = sceneKey ? sceneUrl(sceneKey) : null;
+
+  // Dedicated clue art, if this hotspot carries one (otherwise we fall back to a
+  // zoomed crop of the room). The sofa note has a second close-up reachable via
+  // the zoom toggle.
+  const baseImg = evidenceUrl(target.image);
+  const zoomImg = evidenceUrl(target.zoomImage);
+  const showZoom = zoomed && Boolean(zoomImg);
+  const evidenceImg = showZoom ? zoomImg : baseImg;
+  const evidenceFit = showZoom
+    ? target.zoomFit ?? 'contain'
+    : target.imageFit ?? 'cover';
 
   // Detail crop framing derived from the hotspot position, so the inspected
   // crop centers on the thing examined. Scale up for a "zoomed-in" detail feel.
@@ -177,7 +192,15 @@ export default function ExamineOverlay() {
             {/* LEFT / TOP — framed, zoomed crop of the scene art. */}
             <div className={styles.viewport} data-period={period}>
               <div className={styles.crop}>
-                {art ? (
+                {evidenceImg ? (
+                  <img
+                    src={evidenceImg}
+                    className={styles.evidenceImg}
+                    style={{ objectFit: evidenceFit }}
+                    alt={`${target.label}${showZoom ? ' detail' : ''}`}
+                    draggable="false"
+                  />
+                ) : art ? (
                   <div
                     className={styles.cropImg}
                     style={{
@@ -186,26 +209,39 @@ export default function ExamineOverlay() {
                       backgroundPosition: `${fx * 100}% ${fy * 100}%`,
                     }}
                     role="img"
-                    aria-label={`${room?.label ?? 'Scene'} — detail`}
+                    aria-label={`${room?.label ?? 'Scene'} detail`}
                   />
                 ) : (
                   <div className={styles.cropMissing} aria-hidden="true">
                     NO SIGNAL
                   </div>
                 )}
-                {/* Reticle pinned on the inspected detail. */}
-                <span className={styles.reticle} aria-hidden="true">
-                  <span className={styles.rTL} />
-                  <span className={styles.rTR} />
-                  <span className={styles.rBL} />
-                  <span className={styles.rBR} />
-                </span>
+                {/* Reticle pins on a room-crop detail; hidden over full clue art. */}
+                {!evidenceImg && (
+                  <span className={styles.reticle} aria-hidden="true">
+                    <span className={styles.rTL} />
+                    <span className={styles.rTR} />
+                    <span className={styles.rBL} />
+                    <span className={styles.rBR} />
+                  </span>
+                )}
                 <span className={styles.scan} aria-hidden="true" />
               </div>
               <div className={styles.viewportMeta}>
-                <span className={styles.metaRoom}>{room?.label ?? '—'}</span>
-                <span className={styles.metaDot}>·</span>
-                <span className={styles.metaPeriod}>{period.toUpperCase()}</span>
+                <span className={styles.metaInfo}>
+                  <span className={styles.metaRoom}>{room?.label ?? '—'}</span>
+                  <span className={styles.metaDot}>·</span>
+                  <span className={styles.metaPeriod}>{period.toUpperCase()}</span>
+                </span>
+                {zoomImg && (
+                  <button
+                    type="button"
+                    className={styles.zoomBtn}
+                    onClick={() => setZoomed((z) => !z)}
+                  >
+                    {showZoom ? '◂ BACK' : `${target.zoomLabel ?? 'ZOOM IN'} ▸`}
+                  </button>
+                )}
               </div>
             </div>
 

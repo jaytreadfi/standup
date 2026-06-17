@@ -4,9 +4,8 @@
  * Pure data. Portrait resolution lives in data/scenes.js (portraitUrl(id)).
  *
  * Yibo is the victim (dead: true, no schedule) — the visiting cofounder, present
- * in the roster as the body, excluded from the suspect board. He has no portrait
- * asset (the roster renders the deceased row without one). Everyone else —
- * including David, the killer — is a living, accusable suspect.
+ * in the roster as the body (DECEASED), excluded from the suspect board. Everyone
+ * else — including David, the killer — is a living, accusable suspect.
  *
  * schedule: ordered list of { at, room } breakpoints (at = elapsed minutes
  * since the shift clock's zero). A character is in the room of the latest
